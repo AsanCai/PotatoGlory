@@ -6,20 +6,23 @@ public class BackgroundPropSpawner : MonoBehaviour {
 
     public Rigidbody2D backgroundProp;
 
+    //生成的位置
     public float leftSpawnPosX;
     public float rightSpawnPosX;
-
     public float minSpawnPoxY;
     public float maxSpawnPoxY;
 
+    //生成的间隔时间区间
     public float minTimeBetweenSpawns;
     public float maxTimeBetweenSpawns;
 
+    //生成之后运动的速度区间
     public float minSpeed;
     public float maxSpeed;
 
-    // Use this for initialization
+    
     void Start () {
+        //设置一个seed，让随机数列不同
         Random.InitState(System.DateTime.Today.Millisecond);
 
         StartCoroutine(Spawn());
@@ -30,17 +33,17 @@ public class BackgroundPropSpawner : MonoBehaviour {
 
         yield return new WaitForSeconds(waitTime);
 
+        //设定面朝左边的概率
         bool facingLeft = Random.Range(0, 2) == 0;
 
+        //判定生成的位置
         float posX = facingLeft ? rightSpawnPosX : leftSpawnPosX;
-
         float posY = Random.Range(minSpawnPoxY, maxSpawnPoxY);
-
         Vector3 spawnPos = new Vector3(posX, posY, transform.position.z);
 
         Rigidbody2D prop = Instantiate(backgroundProp, spawnPos, Quaternion.identity);
 
-
+        //因为图片默认朝左边，所以需要进行翻转
         if (!facingLeft) {
             Vector3 scale = prop.transform.localScale;
             scale.x *= -1;
@@ -49,15 +52,16 @@ public class BackgroundPropSpawner : MonoBehaviour {
 
         float speed = Random.Range(minSpeed, maxSpeed);
 
-
+        //根据朝向设定速度
         speed *= facingLeft ? -1f : 1f;
 
         prop.velocity = new Vector2(speed, 0);
 
 
-        //递归调用后台生成函数
+        //递归调用后台生成函数，开始一个新的协程
         StartCoroutine(Spawn());
 
+        //确保创造的prop被销毁之后才结束协程
         while (prop != null) {
 
             if (facingLeft) {

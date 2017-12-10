@@ -26,14 +26,14 @@ public class Destroyer : MonoBehaviour {
         }
     }
 
-    //下面三个函数暂时没用到
+    //下面三个函数在Animation Event中被用到
     void DestroyChildGameObject() {
         if (transform.Find(namedChild).gameObject != null)
             Destroy(transform.Find(namedChild).gameObject);
     }
 
     void DisableChildGameObject() {
-        if(transform.Find(namedChild).gameObject.activeSelf == true) {
+        if (transform.Find(namedChild).gameObject.activeSelf == true) {
             transform.Find(namedChild).gameObject.SetActive(false);
         }
     }

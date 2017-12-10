@@ -47,7 +47,7 @@ public class Enemy : MonoBehaviour {
 
         //假如前方是障碍物，就只执行转向操作
         foreach(Collider2D c in frontHits) {
-            Debug.Log(c.name);
+
             if(c.tag == "Obstacle") {
                 Flip();
                 break;
