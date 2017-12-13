@@ -35,12 +35,15 @@ public class PlayerControl : MonoBehaviour {
     private bool grounded = false;
     private Animator animator;
     private Rigidbody2D body;
+    private AudioSource audioSource;
 
     private void Awake() {
         //寻找名为groundCheck的子组件
         groundCheck = transform.Find("groundCheck");
         animator = GetComponent<Animator>();
         body = GetComponent<Rigidbody2D>();
+
+        audioSource = GetComponent<AudioSource>();
     }
 
 	
@@ -111,11 +114,11 @@ public class PlayerControl : MonoBehaviour {
             yield return new WaitForSeconds(tauntDelay);
 
 
-            if (!GetComponent<AudioSource>().isPlaying) {
+            if (!audioSource.isPlaying) {
                 tauntIndex = TauntRandom();
 
-                GetComponent<AudioSource>().clip = taunts[tauntIndex];
-                GetComponent<AudioSource>().Play();
+                audioSource.clip = taunts[tauntIndex];
+                audioSource.Play();
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LayBombs : MonoBehaviour {
 
@@ -12,11 +13,13 @@ public class LayBombs : MonoBehaviour {
     public GameObject bomb;
 
 
-    //private GUITexture bombHUD;
+    private Image bombHUD;
 
-    //private void Awake() {
-    //    bombHUD = GameObject.Find("bombHUD").GetComponent<GUITexture>();
-    //}
+    private void Awake() {
+        GameObject obj = GameObject.Find("bombHUD");
+
+        bombHUD = obj.GetComponent<Image>();
+    }
 
 
     void Update () {
@@ -30,7 +33,7 @@ public class LayBombs : MonoBehaviour {
             Instantiate(bomb, transform.position, transform.rotation);
         }
 
-        //bombHUD.enabled = bombCount > 0;
+        bombHUD.enabled = bombCount > 0;
 
     }
 }

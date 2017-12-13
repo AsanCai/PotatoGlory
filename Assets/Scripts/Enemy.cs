@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour {
     //检测怪物当前是否死亡
     private bool dead = false;
     //获取Score脚本的引用
-    //private Score score;
+    private Score score;
     //用于设置怪物对象的物理属性
     private Rigidbody2D body;
 
@@ -37,7 +37,7 @@ public class Enemy : MonoBehaviour {
 
         frontCheck = transform.Find("frontCheck").transform;
 
-        //score = GameObject.Find("Score").GetComponent<Score>();
+        score = GameObject.Find("UIController").GetComponent<Score>();
 
         body = GetComponent<Rigidbody2D>();
     }
@@ -79,7 +79,7 @@ public class Enemy : MonoBehaviour {
         spriteRenderer.enabled = true;
         spriteRenderer.sprite = deadEnemy;
 
-        //score.score += 100;
+        score.score += 100;
 
         dead = true;
 
@@ -97,7 +97,7 @@ public class Enemy : MonoBehaviour {
 
         scorePos.y += 1.5f;
 
-        //Instantiate(hundredPointsUI, scorePos, Quaternion.identity);
+        Instantiate(hundredPointsUI, scorePos, Quaternion.identity);
     }
 
     public void Flip() {
