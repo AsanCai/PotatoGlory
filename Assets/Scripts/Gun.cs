@@ -22,21 +22,39 @@ public class Gun : MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
     }
 
-    void Update () {
-        if (Input.GetButtonDown("Fire1")) {
-            //因为播放射击动画的状态是从AnyState触发的，所以需要使用SetTrigger，触发之后自动重置，避免多次循环
-            animator.SetTrigger("Shoot");
-            //播放射击音效
-            audioSource.Play();
 
-            //根据角色当前的朝向实例化导弹
-            if (playerCtrl.facingRight) {
-                Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, Quaternion.Euler(new Vector3(0, 0, 0))) as Rigidbody2D;
-                bulletInstance.velocity = new Vector2(speed, 0);
-            } else {
-                Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, Quaternion.Euler(new Vector3(0, 0, 180))) as Rigidbody2D;
-                bulletInstance.velocity = new Vector2(-speed, 0);
-            }
+    public void Fire() {
+        //因为播放射击动画的状态是从AnyState触发的，所以需要使用SetTrigger，触发之后自动重置，避免多次循环
+        animator.SetTrigger("Shoot");
+        //播放射击音效
+        audioSource.Play();
+
+        //根据角色当前的朝向实例化导弹
+        if (playerCtrl.facingRight) {
+            Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, Quaternion.Euler(new Vector3(0, 0, 0))) as Rigidbody2D;
+            bulletInstance.velocity = new Vector2(speed, 0);
+        } else {
+            Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, Quaternion.Euler(new Vector3(0, 0, 180))) as Rigidbody2D;
+            bulletInstance.velocity = new Vector2(-speed, 0);
         }
-	}
+
+        Debug.Log("Fire");
+    }
+ //   void Update () {
+ //       if (Input.GetButtonDown("Fire1")) {
+ //           //因为播放射击动画的状态是从AnyState触发的，所以需要使用SetTrigger，触发之后自动重置，避免多次循环
+ //           animator.SetTrigger("Shoot");
+ //           //播放射击音效
+ //           audioSource.Play();
+
+ //           //根据角色当前的朝向实例化导弹
+ //           if (playerCtrl.facingRight) {
+ //               Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, Quaternion.Euler(new Vector3(0, 0, 0))) as Rigidbody2D;
+ //               bulletInstance.velocity = new Vector2(speed, 0);
+ //           } else {
+ //               Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, Quaternion.Euler(new Vector3(0, 0, 180))) as Rigidbody2D;
+ //               bulletInstance.velocity = new Vector2(-speed, 0);
+ //           }
+ //       }
+	//}
 }

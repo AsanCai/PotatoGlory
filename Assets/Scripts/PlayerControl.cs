@@ -16,7 +16,7 @@ public class PlayerControl : MonoBehaviour {
 
     public float moveForce = 365f;
     public float maxSpeed = 5f;
-    public float jumpForce = 1000f;
+    public float jumpForce = 100f;
 
     //保存跳跃的音效
     public AudioClip[] jumpClips;
@@ -37,6 +37,8 @@ public class PlayerControl : MonoBehaviour {
     private Rigidbody2D body;
     private AudioSource audioSource;
 
+    private VirtualJoyStick stick;
+
     private void Awake() {
         //寻找名为groundCheck的子组件
         groundCheck = transform.Find("groundCheck");
@@ -44,6 +46,8 @@ public class PlayerControl : MonoBehaviour {
         body = GetComponent<Rigidbody2D>();
 
         audioSource = GetComponent<AudioSource>();
+
+        stick = GameObject.Find("Virtual JoyStick").GetComponent<VirtualJoyStick>();
     }
 
 	
@@ -53,11 +57,17 @@ public class PlayerControl : MonoBehaviour {
 
         if (Input.GetButtonDown("Jump") && grounded)
             jump = true;
-	}
+
+        //if (stick.Jump && grounded)
+        //    jump = true;
+    }
 
     private void FixedUpdate() {
         //获取水平输入
-        float h = Input.GetAxis("Horizontal");
+        //float h = Input.GetAxis("Horizontal");
+
+        float h = stick.InputDirection.x;
+
         //播放行走动画
         animator.SetFloat("Speed", Mathf.Abs(h));
 
@@ -89,6 +99,8 @@ public class PlayerControl : MonoBehaviour {
 
             //设置一个竖直向上的力
             body.AddForce(new Vector2(0f, jumpForce));
+            Debug.Log(jumpForce);
+
 
             // 只跳跃一次，避免重复跳跃
             jump = false;
