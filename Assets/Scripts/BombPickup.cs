@@ -8,15 +8,19 @@ public class BombPickup : MonoBehaviour {
     private Animator anim;
     private bool landed = false;
 
+    private LayBombs layBombs;
+
     private void Awake() {
         anim = transform.root.GetComponent<Animator>();
+
+        layBombs = GameObject.Find("LayBombs").GetComponent<LayBombs>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
         if(collision.tag == "Player") {
             AudioSource.PlayClipAtPoint(pickupClip, transform.position);
 
-            collision.GetComponent<LayBombs>().bombCount ++;
+            layBombs.bombCount ++;
 
             Destroy(transform.root.gameObject);
         } else {

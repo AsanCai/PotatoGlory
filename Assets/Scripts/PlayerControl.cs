@@ -37,7 +37,10 @@ public class PlayerControl : MonoBehaviour {
     private Rigidbody2D body;
     private AudioSource audioSource;
 
+    //获取虚拟摇杆的引用，以获取行走方向
     private VirtualJoyStick stick;
+    //获取跳跃按钮的引用
+    private Jump jumpBtn;
 
     private void Awake() {
         //寻找名为groundCheck的子组件
@@ -47,7 +50,8 @@ public class PlayerControl : MonoBehaviour {
 
         audioSource = GetComponent<AudioSource>();
 
-        stick = GameObject.Find("Virtual JoyStick").GetComponent<VirtualJoyStick>();
+        stick = GameObject.Find("VirtualJoyStick").GetComponent<VirtualJoyStick>();
+        jumpBtn = GameObject.Find("Jump").GetComponent<Jump>();
     }
 
 	
@@ -55,11 +59,14 @@ public class PlayerControl : MonoBehaviour {
         //通过检测角色和groundCheck之间是否存在Ground层的物体来判断当前是否落地
         grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-        if (Input.GetButtonDown("Jump") && grounded)
-            jump = true;
+        //if (Input.GetButtonDown("Jump") && grounded)
+        //    jump = true;
 
         //if (stick.Jump && grounded)
         //    jump = true;
+
+        if (jumpBtn.pressDown && grounded)
+            jump = true;
     }
 
     private void FixedUpdate() {
@@ -99,11 +106,12 @@ public class PlayerControl : MonoBehaviour {
 
             //设置一个竖直向上的力
             body.AddForce(new Vector2(0f, jumpForce));
-            Debug.Log(jumpForce);
 
 
             // 只跳跃一次，避免重复跳跃
             jump = false;
+            //重置当前按钮的状态
+            jumpBtn.pressDown = false;
         }
     }
     

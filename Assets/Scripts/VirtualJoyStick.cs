@@ -11,7 +11,7 @@ public class VirtualJoyStick : MonoBehaviour, IDragHandler, IPointerDownHandler,
     private Image stickImg;
 
     public Vector2 InputDirection { get; set; }
-    public bool Jump { set; get; }
+    
 
     private void Start() {
         bgImg = GetComponent<Image>();
@@ -20,7 +20,7 @@ public class VirtualJoyStick : MonoBehaviour, IDragHandler, IPointerDownHandler,
 
         InputDirection = Vector2.zero;
 
-        Jump = false;
+        //Jump = false;
     }
 
     //实现上面三个接口的函数
@@ -41,8 +41,8 @@ public class VirtualJoyStick : MonoBehaviour, IDragHandler, IPointerDownHandler,
             stickImg.rectTransform.anchoredPosition = new Vector2(InputDirection.x * (bgImg.rectTransform.sizeDelta.x / 3),
                 InputDirection.y * (bgImg.rectTransform.sizeDelta.y / 3));
 
-            if (Mathf.Abs(InputDirection.x) < 0.1 && InputDirection.y > 0.5)
-                Jump = true;
+            //if (Mathf.Abs(InputDirection.x) < 0.1 && InputDirection.y > 0.5)
+            //    Jump = true;
         }
     }
 
@@ -54,7 +54,5 @@ public class VirtualJoyStick : MonoBehaviour, IDragHandler, IPointerDownHandler,
         InputDirection = Vector2.zero;
 
         stickImg.rectTransform.anchoredPosition = Vector2.zero;
-
-        Jump = false;
     }
 }

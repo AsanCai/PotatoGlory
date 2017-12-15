@@ -20,9 +20,7 @@ public class Bomb : MonoBehaviour {
 
         pickupSpawner = GameObject.Find("pickupManager").GetComponent<PickupSpawner>();
 
-        if (GameObject.FindGameObjectWithTag("Player")) {
-            layBombs = GameObject.FindGameObjectWithTag("Player").GetComponent<LayBombs>();
-        }
+        layBombs = GameObject.Find("LayBombs").GetComponent<LayBombs>();
     }
 
     private void Start() {
