@@ -18,5 +18,5 @@ EditorBuildSettings:
     path: Assets/Scenes/SPGameScene.unity
     guid: c665f841a3428bf49829ab45c4045466
   - enabled: 1
-    path: Assets/Scenes/GameScene.unity
+    path: Assets/Scenes/CompetitionScene.unity
     guid: adb680a3690a7d54fa2b332ce35a8b16

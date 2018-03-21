@@ -37,8 +37,6 @@ public class Gun : MonoBehaviour {
             Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, Quaternion.Euler(new Vector3(0, 0, 180))) as Rigidbody2D;
             bulletInstance.velocity = new Vector2(-speed, 0);
         }
-
-        Debug.Log("Fire");
     }
  //   void Update () {
  //       if (Input.GetButtonDown("Fire1")) {

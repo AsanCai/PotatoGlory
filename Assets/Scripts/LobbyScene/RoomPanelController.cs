@@ -26,6 +26,7 @@ public class RoomPanelController : PunBehaviour {
     private Text[] texts;
     ExitGames.Client.Photon.Hashtable costomProperties;
 
+
     private void Start() {
         pView = GetComponent<PhotonView>();
     }
@@ -218,6 +219,12 @@ public class RoomPanelController : PunBehaviour {
 
     //开始游戏按钮事件响应函数
     void ClickStartGameButton() {
+        if (PhotonNetwork.playerList.Length < PhotonNetwork.room.MaxPlayers) {
+            //提示信息显示"有人未准备，游戏无法开始"
+            promptMessage.text = "玩家数不足，游戏无法开始";
+            return;
+        }
+
         //遍历房间内所有玩家
         foreach (PhotonPlayer p in PhotonNetwork.playerList) {
             //不检查MasterClient房主的准备状态
@@ -228,7 +235,7 @@ public class RoomPanelController : PunBehaviour {
             //如果有其他玩家未准备
             if ((bool)p.CustomProperties["isReady"] == false) {
                 //提示信息显示"有人未准备，游戏无法开始"
-                promptMessage.text = "有人未准备，游戏无法开始";        
+                promptMessage.text = "有人未准备，游戏无法开始";
                 return;                                             
             }
         }
@@ -239,7 +246,7 @@ public class RoomPanelController : PunBehaviour {
         PhotonNetwork.room.IsOpen = false;
 
         //调用RPC，让游戏房间内所有玩家加载场景GameScene，开始游戏
-        pView.RPC("LoadGameScene", PhotonTargets.All, "GameScene"); 
+        pView.RPC("LoadGameScene", PhotonTargets.All, "CompetitionScene"); 
     }
 
     public void ClickExitButton() {

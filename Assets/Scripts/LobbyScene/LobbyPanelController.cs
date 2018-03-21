@@ -58,12 +58,16 @@ public class LobbyPanelController : PunBehaviour {
         //初始化最大房间页	
         maxPageNumber = 1;
 
+
         //禁用创建房间面板
-        if (createRoomPanel != null)
+        if (createRoomPanel != null) {
             createRoomPanel.SetActive(false);
+        }
         //禁用游戏房间面板
-        if (roomPanel != null)
-            roomPanel.SetActive(false);				
+        if (roomPanel != null) {
+            roomPanel.SetActive(false);
+        }
+            			
 
         //获取房间信息面板
         RectTransform rectTransform = roomMessagePanel.GetComponent<RectTransform>();

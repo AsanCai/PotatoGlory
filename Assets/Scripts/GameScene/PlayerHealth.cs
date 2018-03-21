@@ -89,6 +89,7 @@ public class PlayerHealth : MonoBehaviour {
         AudioSource.PlayClipAtPoint(ouchClips[i], transform.position);
     }
 
+
     public void UpdateHealthBar() {
         //把生命条的颜色逐渐变红
         healthBar.material.color = Color.Lerp(Color.green, Color.red, 1 - health * 0.01f);

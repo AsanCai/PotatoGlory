@@ -43,4 +43,14 @@ MonoBehaviour:
   - RequestForPickupTimes
   - TaggedPlayer
   - LoadGameScene
+  - UpdateHealthBar
+  - ConfirmLoad
+  - EndGame
+  - SetTime
+  - StartGame
+  - SetInvincible
+  - SetPlayer
+  - UpdateHP
+  - Shoot
+  - OnExplode
   DisableAutoOpenWizard: 1
