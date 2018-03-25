@@ -754,8 +754,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbad35805b23f4449874466ef7fbc0ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 18
+  speed: 30
   gun: {fileID: 1427627222868806}
+  rocketPrefab: {fileID: 1889097296997490, guid: 8f62460f71389a94cb800b2a5cecbc81,
+    type: 2}
 --- !u!114 &114320680434943560
 MonoBehaviour:
   m_ObjectHideFlags: 1

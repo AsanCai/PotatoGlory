@@ -21,7 +21,7 @@ public class CreateRoomPanelController : PunBehaviour {
 
 
     private byte maxPlayers = 2;
-    private string[] modes = { "对战", "闯关" };
+    private string[] modes = { "Competition", "Cooperation" };
     private string[] keys = { "GameMode" };
 
 	void OnEnable () {

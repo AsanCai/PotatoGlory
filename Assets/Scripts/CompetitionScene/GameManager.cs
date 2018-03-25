@@ -66,9 +66,14 @@ namespace AsanCai.Competition {
         private const float photonCircleTime = 4294967.295f;
         private PlayerHealth playerHealth;
 
+        private bool isAliveOfPlayer1;
+        private bool isAliveOfPlayer2;
+
         private void Start() {
             gm = GetComponent<GameManager>();
             mainCamera = Camera.main;
+            isAliveOfPlayer1 = true;
+            isAliveOfPlayer2 = true;
 
             //清空游戏结果提示信息
             gameResult.text = "";
@@ -108,8 +113,23 @@ namespace AsanCai.Competition {
                     hpBar.value = playerHealth.currentHP;
 
                     //MasterClient检查游戏状态
-                    if (PhotonNetwork.isMasterClient) {                 
+                    if (PhotonNetwork.isMasterClient) {
                         
+                        //玩家2死亡，玩家1获胜
+                        if (isAliveOfPlayer1 && !isAliveOfPlayer2) {
+                            photonView.RPC("EndGame", 
+                                PhotonTargets.All, "Player1", PhotonNetwork.time);
+                        }
+                        //玩家1死亡，玩家2获胜
+                        if (!isAliveOfPlayer1 && isAliveOfPlayer2) {
+                            photonView.RPC("EndGame",
+                                PhotonTargets.All, "Player2", PhotonNetwork.time);
+                        }
+                        //倒计时结束，玩家1、玩家2都存活，平手
+                        if (countDown < 0.0f && isAliveOfPlayer1 && isAliveOfPlayer2) {
+                            photonView.RPC("EndGame",
+                                PhotonTargets.All, "Tie", PhotonNetwork.time);
+                        }
                     }
                     break;
                 //游戏胜利状态，倒计时结束，退出游戏房间
@@ -196,7 +216,6 @@ namespace AsanCai.Competition {
             //设置游戏结束倒计时时间
             SetTime(timer, gameOverTime);   
         }
-
         #endregion
 
 
@@ -287,6 +306,22 @@ namespace AsanCai.Competition {
             mainCamera.GetComponent<CameraFollow>().enabled = true;
         }
 
+        //获取当前玩家的存活状态
+        public void UpdateAliveState() {
+            PhotonPlayer[] players = PhotonNetwork.playerList;  //获取房间内所有玩家的信息
+
+            //遍历房间内所有玩家，将他们的得分根据他们的队伍放入对应的队伍列表中
+            foreach (PhotonPlayer p in players) {
+                if (p.CustomProperties["Player"].ToString() == "Player1") {
+                    isAliveOfPlayer1 = (bool)p.CustomProperties["isAlive"];
+                    
+                }
+
+                if (p.CustomProperties["Player"].ToString() == "Player2") {
+                    isAliveOfPlayer2 = (bool)p.CustomProperties["isAlive"];
+                }
+            }
+        }
         #endregion
 
 

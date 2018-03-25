@@ -947,7 +947,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &377813616
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -994,10 +994,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 377813615}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f39ee8d830e5fe64d9147faad178b6d2, type: 3}
+  m_Script: {fileID: 11500000, guid: 80e9bb763fcf66b4fa33025c2b867b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  splash: {fileID: 100000, guid: 3c2f4b0a1dcea4377b723eea567d654b, type: 2}
+  splash: {fileID: 1107878756344098, guid: 85ee0bfb33384c14083a4005af5f6c0c, type: 2}
 --- !u!1 &423308285
 GameObject:
   m_ObjectHideFlags: 0

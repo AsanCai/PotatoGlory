@@ -115,8 +115,13 @@ public class LobbyPanelController : PunBehaviour {
             //显示房间名称
             rectTransform.GetChild(1).GetComponent<Text>().text = roomName;
             //显示游戏模式
-            rectTransform.GetChild(2).GetComponent<Text>().text
-                = (string)roomInfo[i].CustomProperties["GameMode"];
+            string mode = (string)roomInfo[i].CustomProperties["GameMode"];
+            if(mode == "Competition") {
+                rectTransform.GetChild(2).GetComponent<Text>().text = "竞技";
+            } else {
+                rectTransform.GetChild(2).GetComponent<Text>().text = "闯关";
+            }
+            
 
 
             //获取"进入房间"按钮组件

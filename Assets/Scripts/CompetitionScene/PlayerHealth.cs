@@ -35,6 +35,8 @@ namespace AsanCai.Competition {
         private Animator anim;
         //用于检测当前是否处于免伤状态
         private float timer;
+        //用于设置自定义属性
+        private ExitGames.Client.Photon.Hashtable costomProperties;
 
         private void Awake() {
             currentHP = maxHP;
@@ -52,7 +54,7 @@ namespace AsanCai.Competition {
             }
 
             //使用RPC，更新其他客户端中该玩家对象当前血量
-            photonView.RPC("UpdateHP", PhotonTargets.Others, currentHP);	
+            photonView.RPC("UpdateHP", PhotonTargets.Others, currentHP, PhotonNetwork.player);	
             
 
             if(PhotonNetwork.player.CustomProperties["Player"].ToString() == "Player1") {
@@ -88,60 +90,17 @@ namespace AsanCai.Competition {
             //假如撞到怪物
             if (collision.gameObject.tag == "Enemy") {
                 //调用受伤函数
-                TakeDamage(damageAmount, collision.transform);
+                TakeDamage(damageAmount, collision.transform.position);
             }
         }
 
+        #region 公用函数
         //受伤函数
-        public void TakeDamage(int damage, Transform enemy) {
-            //玩家死亡或者无敌，不执行扣血函数
-            if (!isAlive || invincible)            
-                return;
-
-            //角色不能跳跃
-            playCtrl.jump = false;
-
-            //给角色加上后退的力，制造击退效果
-            Vector3 hurtVector = transform.position - enemy.position + Vector3.up * 5f;
-            GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
-
-            //随机播放音频
-            int i = Random.Range(0, ouchClips.Length);
-            AudioSource.PlayClipAtPoint(ouchClips[i], transform.position);
-
-
-            if (PhotonNetwork.isMasterClient) {
-                //更新角色的生命值
-                currentHP -= damage;
-                //更新所有客户端，该玩家对象的生命值
-                photonView.RPC("UpdateHP", PhotonTargets.All, currentHP);	
-            }
+        public void Hurt(int damage, Vector3 enemyPos) {
+            photonView.RPC("TakeDamage", PhotonTargets.All, damage, enemyPos);
         }
 
-        [PunRPC]
-        public void UpdateHP(int newHP) {
-            currentHP = newHP;
-
-            if(currentHP <= 0) {
-                isAlive = false;
-
-                Death();
-            }
-        }
-
-        //RPC函数，设置玩家的无敌状态
-        [PunRPC]
-        void SetInvincible(bool isInvincible) {
-            invincible = isInvincible;
-        }
-
-        //RPC函数，设置玩家队伍
-        [PunRPC]
-        void SetPlayer(int newpalyer) {
-            player = newpalyer;
-        }
-
-
+        //死亡函数
         private void Death() {
 
             if (photonView.isMine) {
@@ -165,5 +124,67 @@ namespace AsanCai.Competition {
             GetComponent<PlayerController>().enabled = false;
             GetComponent<PlayerShoot>().enabled = false;
         }
+        #endregion
+
+        #region RPC函数
+        [PunRPC]
+        //受伤函数
+        private void TakeDamage(int damage, Vector3 enemyPos) {
+            //玩家死亡或者无敌，不执行扣血函数
+            if (!isAlive || invincible)
+                return;
+
+            //角色不能跳跃
+            playCtrl.jump = false;
+
+            //给角色加上后退的力，制造击退效果
+            Vector3 hurtVector = transform.position - enemyPos + Vector3.up * 5f;
+            GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
+
+            //随机播放音频
+            int i = Random.Range(0, ouchClips.Length);
+            AudioSource.PlayClipAtPoint(ouchClips[i], transform.position);
+
+            //只有主客户端有权限更新血量值
+            if (PhotonNetwork.isMasterClient) {
+                //更新角色的生命值
+                currentHP -= damage;
+                //更新所有客户端，该玩家对象的生命值
+                photonView.RPC("UpdateHP", PhotonTargets.All, currentHP, PhotonNetwork.player);
+            }
+        }
+
+
+        [PunRPC]
+        public void UpdateHP(int newHP, PhotonPlayer p) {
+            currentHP = newHP;
+
+            if(currentHP <= 0) {
+                isAlive = false;
+
+                Death();
+            }
+            //设置玩家当前的存活属性
+            costomProperties = new ExitGames.Client.Photon.Hashtable { { "isAlive", isAlive } };
+            p.SetCustomProperties(costomProperties);
+
+            //更新玩家存活状态
+            GameManager.gm.UpdateAliveState();
+        }
+
+        //RPC函数，设置玩家的无敌状态
+        [PunRPC]
+        void SetInvincible(bool isInvincible) {
+            invincible = isInvincible;
+        }
+
+        //RPC函数，设置玩家队伍
+        [PunRPC]
+        void SetPlayer(int newpalyer) {
+            player = newpalyer;
+        }
+        #endregion
+
+        
     }
 }

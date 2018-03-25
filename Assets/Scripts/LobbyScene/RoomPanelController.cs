@@ -11,10 +11,14 @@ public class RoomPanelController : PunBehaviour {
     public GameObject roomPanel;
     [Tooltip("房间名称")]
     public Text roomName;
+    [Tooltip("游戏模式")]
+    public Text gameMode;
     [Tooltip("准备/开始游戏面板")]
     public Button readyButton;
     [Tooltip("提示信息")]
     public Text promptMessage;
+    [Tooltip("提示信息持续时间")]
+    public float durationTime = 2.5f;
 
     [Tooltip("玩家1信息")]
     public GameObject playerMessage1;
@@ -24,6 +28,7 @@ public class RoomPanelController : PunBehaviour {
 
     private PhotonView pView;
     private Text[] texts;
+    private string mode;
     ExitGames.Client.Photon.Hashtable costomProperties;
 
 
@@ -39,7 +44,14 @@ public class RoomPanelController : PunBehaviour {
         //初始化提示信息
         promptMessage.text = "";
         //初始化房间名
-        roomName.text = PhotonNetwork.room.Name;
+        roomName.text = "房间名：" + PhotonNetwork.room.Name;
+        //初始化游戏模式
+        mode = (string)PhotonNetwork.room.CustomProperties["GameMode"];
+        if(mode == "Competition") {
+            gameMode.text = "模式：竞技模式";
+        } else {
+            gameMode.text = "模式：闯关模式";
+        }
 
         //初始化队伍面板
         DisableTeamPanel();
@@ -69,7 +81,8 @@ public class RoomPanelController : PunBehaviour {
             costomProperties = new ExitGames.Client.Photon.Hashtable() {	
 				{ "Player","Player1" },		//玩家队伍
 				{ "isReady",false },	//玩家准备状态
-				{ "Score",0 }			//玩家得分
+				{ "Score",0 },			//玩家得分
+                {"isAlive", true }      //玩家是否存活
 			};
             //将玩家自定义属性赋予玩家
             PhotonNetwork.player.SetCustomProperties(costomProperties); 
@@ -91,7 +104,8 @@ public class RoomPanelController : PunBehaviour {
             costomProperties = new ExitGames.Client.Photon.Hashtable() {	
 				{ "Player","Player2" },		//玩家队伍
 				{ "isReady",false },	//玩家准备状态
-				{ "Score",0 }			//玩家得分
+				{ "Score",0 },			//玩家得分
+                {"isAlive", true }      //玩家是否存活
 			};
 
             //将玩家自定义属性赋予玩家
@@ -193,6 +207,15 @@ public class RoomPanelController : PunBehaviour {
         }
     }
 
+    /**********************************************************************
+     * 在durationTime之后重置提示信息
+     **********************************************************************/
+    IEnumerator ResetPromtMessage() {
+        yield return new WaitForSeconds(durationTime);
+
+        promptMessage.text = "";
+    }
+
     #endregion
 
 
@@ -222,6 +245,7 @@ public class RoomPanelController : PunBehaviour {
         if (PhotonNetwork.playerList.Length < PhotonNetwork.room.MaxPlayers) {
             //提示信息显示"有人未准备，游戏无法开始"
             promptMessage.text = "玩家数不足，游戏无法开始";
+            StartCoroutine(ResetPromtMessage());
             return;
         }
 
@@ -236,6 +260,7 @@ public class RoomPanelController : PunBehaviour {
             if ((bool)p.CustomProperties["isReady"] == false) {
                 //提示信息显示"有人未准备，游戏无法开始"
                 promptMessage.text = "有人未准备，游戏无法开始";
+                StartCoroutine(ResetPromtMessage());
                 return;                                             
             }
         }
@@ -246,9 +271,10 @@ public class RoomPanelController : PunBehaviour {
         PhotonNetwork.room.IsOpen = false;
 
         //调用RPC，让游戏房间内所有玩家加载场景GameScene，开始游戏
-        pView.RPC("LoadGameScene", PhotonTargets.All, "CompetitionScene"); 
+        pView.RPC("LoadGameScene", PhotonTargets.All, mode + "Scene"); 
     }
 
+    //点击离开房间按钮
     public void ClickExitButton() {
         //客户端离开游戏房间
         PhotonNetwork.LeaveRoom();
@@ -257,7 +283,6 @@ public class RoomPanelController : PunBehaviour {
         //禁用游戏房间面板
         roomPanel.SetActive(false);					
     }
-
     #endregion
     
 
