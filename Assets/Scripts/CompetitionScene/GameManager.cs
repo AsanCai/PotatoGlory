@@ -281,20 +281,46 @@ namespace AsanCai.Competition {
                 localPlayer = PhotonNetwork.Instantiate("Player1",
                     playerOneSpawnTransform.position, Quaternion.identity, 0);
 
+                //设置玩家的初始朝向
                 localPlayer.GetComponent<Transform>().localScale = playerOneSpawnTransform.localScale;
+
+                //设置头上的血量条为不可见
+                localPlayer.transform.Find("healthDisplay").gameObject.SetActive(false);
+
+                //设置摄像机的初始位置
+                mainCamera.transform.position = new Vector3(
+                    playerOneSpawnTransform.position.x,
+                    playerOneSpawnTransform.position.y,
+                    mainCamera.transform.position.z
+                    );
             }
             //如果玩家是Player2，生成Player2对象
             if (playerCustomProperties["Player"].ToString().Equals("Player2")) {
                 localPlayer = PhotonNetwork.Instantiate("Player2", 
                     playerTwoSpawnTransform.position, Quaternion.identity, 0);
 
+                //设置玩家的初始朝向
                 localPlayer.GetComponent<Transform>().localScale = playerTwoSpawnTransform.localScale;
+
+                //设置头上的血量条为不可见
+                localPlayer.transform.Find("healthDisplay").gameObject.SetActive(false);
+
+                //设置摄像机的初始位置
+                mainCamera.transform.position = new Vector3(
+                    playerTwoSpawnTransform.position.x,
+                    playerTwoSpawnTransform.position.y,
+                    mainCamera.transform.position.z
+                    );
+                    
             }
 
             //启用PlayerMove脚本，使玩家对象可以被本地客户端操控
             localPlayer.GetComponent<PlayerController>().enabled = true;
-            //启用PlayerShoot脚本，是玩家对象可以射击
+            //启用PlayerShoot脚本，使玩家对象可以射击
             localPlayer.GetComponent<PlayerShoot>().enabled = true;
+            //启用LayBombs脚本，使玩家可以放置炸弹
+            localPlayer.GetComponent<LayBombs>().enabled = true;
+
             //获取玩家对象的PlayerHealth脚本
             playerHealth = localPlayer.GetComponent<PlayerHealth>();
             //设置显示玩家血量的Slider控件
@@ -308,7 +334,8 @@ namespace AsanCai.Competition {
 
         //获取当前玩家的存活状态
         public void UpdateAliveState() {
-            PhotonPlayer[] players = PhotonNetwork.playerList;  //获取房间内所有玩家的信息
+            //获取房间内所有玩家的信息
+            PhotonPlayer[] players = PhotonNetwork.playerList;  
 
             //遍历房间内所有玩家，将他们的得分根据他们的队伍放入对应的队伍列表中
             foreach (PhotonPlayer p in players) {

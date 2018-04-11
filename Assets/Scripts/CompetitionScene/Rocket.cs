@@ -49,8 +49,14 @@ namespace AsanCai.Competition {
 
             } else if(collision.tag == "Player") {
                 playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+
+                //当玩家为无敌状态时，不做任何操作
+                if (playerHealth.invincible) {
+                    return;
+                }
+
                 //调用受击函数
-                playerHealth.Hurt(10, transform.position);
+                playerHealth.Hurt(damage, transform.position);
 
                 //调用爆炸函数
                 photonView.RPC("OnExplode", PhotonTargets.All, transform.position);

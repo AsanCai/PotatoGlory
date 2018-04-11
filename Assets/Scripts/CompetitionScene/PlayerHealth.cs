@@ -11,11 +11,15 @@ namespace AsanCai.Competition {
         [Tooltip("角色受到伤害后的免伤时间")]
         public float invincibleTime = 2f;
         [Tooltip("角色受到伤害时受到的力，制造击退效果")]
-        public float hurtForce = 10f;
+        public float hurtForce = 100f;
+        //[Tooltip("角色被炸弹炸到时受到的冲击力")]
+        //public float bombForce = 100f;
         [Tooltip("受伤害时减少的血量")]
         public int damageAmount = 10;
         [Tooltip("受伤音效")]
         public AudioClip[] ouchClips;
+        [Tooltip("玩家头上的血量条")]
+        public SpriteRenderer healthBar;
 
         //玩家所属队伍
         [HideInInspector]
@@ -32,22 +36,28 @@ namespace AsanCai.Competition {
 
 
         private PlayerController playCtrl;
+
+        private Vector3 healthScale;
         private Animator anim;
         //用于检测当前是否处于免伤状态
         private float timer;
         //用于设置自定义属性
         private ExitGames.Client.Photon.Hashtable costomProperties;
 
+
         private void Awake() {
+            playCtrl = GetComponent<PlayerController>();
+            anim = GetComponent<Animator>();
+
+            //初始化必需的值
             currentHP = maxHP;
             isAlive = true;
             invincible = false;
-            timer = 0;
         }
 
         private void Start() {
-            playCtrl = GetComponent<PlayerController>();
-            anim = GetComponent<Animator>();
+            timer = 0;
+            healthScale = healthBar.transform.localScale;
 
             if (!photonView.isMine) {
                 return;
@@ -56,7 +66,6 @@ namespace AsanCai.Competition {
             //使用RPC，更新其他客户端中该玩家对象当前血量
             photonView.RPC("UpdateHP", PhotonTargets.Others, currentHP, PhotonNetwork.player);	
             
-
             if(PhotonNetwork.player.CustomProperties["Player"].ToString() == "Player1") {
                 player = 1;
             } else {
@@ -71,18 +80,17 @@ namespace AsanCai.Competition {
             if (!photonView.isMine)     
                 return;
 
-            //累加玩家对象的无敌时间
-            timer += Time.deltaTime;
-
-            //使用RPC，设置所有客户端该玩家对象的无敌状态
-            if (timer > invincibleTime && invincible == true) {
-                photonView.RPC("SetInvincible", PhotonTargets.All, false);
-            }
-            if (timer <= invincibleTime && invincible == false) {
-                photonView.RPC("SetInvincible", PhotonTargets.All, true);
-
-                //重置计时器
+            if (invincible) {
+                //当前是无敌状态，累加玩家对象的无敌时间
+                timer += Time.deltaTime;
+            } else {
+                //当前不是无敌状态，重置计时器
                 timer = 0;
+            }
+
+            //超过无敌时间，退出无敌状态
+            if (timer > invincibleTime) {
+                photonView.RPC("SetInvincible", PhotonTargets.All, false);
             }
         }
 
@@ -90,14 +98,24 @@ namespace AsanCai.Competition {
             //假如撞到怪物
             if (collision.gameObject.tag == "Enemy") {
                 //调用受伤函数
-                TakeDamage(damageAmount, collision.transform.position);
+                TakeDamage(damageAmount, collision.transform.position, false);
             }
         }
 
         #region 公用函数
         //受伤函数
-        public void Hurt(int damage, Vector3 enemyPos) {
-            photonView.RPC("TakeDamage", PhotonTargets.All, damage, enemyPos);
+        public void Hurt(int damage, Vector3 enemyPos, bool bombed = false) {
+            photonView.RPC("TakeDamage", PhotonTargets.All, damage, enemyPos, bombed);
+
+            UpdateHealthDisplay();
+        }
+
+        //更新玩家头上的血量条
+        private  void UpdateHealthDisplay() {
+            //把玩家头上的生命条的颜色逐渐变红
+            healthBar.material.color = Color.Lerp(Color.green, Color.red, 1 - currentHP * 0.01f);
+            //缩短玩家头上的生命条
+            healthBar.transform.localScale = new Vector3(healthScale.x * currentHP * 0.01f, 1, 1);
         }
 
         //死亡函数
@@ -129,17 +147,27 @@ namespace AsanCai.Competition {
         #region RPC函数
         [PunRPC]
         //受伤函数
-        private void TakeDamage(int damage, Vector3 enemyPos) {
+        private void TakeDamage(int damage, Vector3 hitPos, bool bombed = false) {
             //玩家死亡或者无敌，不执行扣血函数
             if (!isAlive || invincible)
                 return;
 
+            //让角色进入无敌状态
+            photonView.RPC("SetInvincible", PhotonTargets.All, true);
             //角色不能跳跃
             playCtrl.jump = false;
 
-            //给角色加上后退的力，制造击退效果
-            Vector3 hurtVector = transform.position - enemyPos + Vector3.up * 5f;
-            GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
+
+            //如果不是被炸弹炸到，需要制造受伤效果
+            if (!bombed) {
+                //给角色加上后退的力，制造击退效果
+                Vector3 hurtVector = transform.position - hitPos + Vector3.up * 5f;
+                GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
+            } else {
+                //给角色加上后退的力，制造击退效果
+                Vector3 hurtVector = transform.position - hitPos;
+                GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
+            }
 
             //随机播放音频
             int i = Random.Range(0, ouchClips.Length);
@@ -159,7 +187,7 @@ namespace AsanCai.Competition {
         public void UpdateHP(int newHP, PhotonPlayer p) {
             currentHP = newHP;
 
-            if(currentHP <= 0) {
+            if (currentHP <= 0) {
                 isAlive = false;
 
                 Death();

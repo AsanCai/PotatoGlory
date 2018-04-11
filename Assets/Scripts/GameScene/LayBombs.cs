@@ -13,7 +13,7 @@ public class LayBombs : MonoBehaviour, IPointerDownHandler {
     public AudioClip bombsAway;
     public GameObject bomb;
     
-    //提示可防止炸弹的UI
+    //提示可放置炸弹的UI
     private Image bombHUD;
     //因为放置炸弹的代码绑定到按钮上了，所以需要获取玩家的位置实例化炸弹
     private Transform player;
