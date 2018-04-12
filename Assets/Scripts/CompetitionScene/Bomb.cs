@@ -52,7 +52,9 @@ namespace AsanCai.Competition {
 
         [PunRPC]
         public void Explode(Vector3 pos) {
-            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, bombRadius, 1 << LayerMask.NameToLayer("Enemies"));
+
+            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, bombRadius, 
+                1 << LayerMask.NameToLayer("Enemies") | 1 << LayerMask.NameToLayer("Player"));
 
             foreach (Collider2D en in enemies) {
                 Rigidbody2D rb = en.GetComponent<Rigidbody2D>();
@@ -67,13 +69,18 @@ namespace AsanCai.Competition {
                             en.GetComponent<PlayerHealth>().Hurt(damage, pos, true);
                         }
 
-                        //实现被炸飞的效果
-                        Vector3 deltaPos = rb.transform.position - pos;
-                        Vector3 force = deltaPos.normalized * bombForce;
-                        rb.AddForce(force);
+                        //避免玩家被炸飞两次
+                        if (PhotonNetwork.isMasterClient) {
+                            //实现被炸飞的效果
+                            Vector3 deltaPos = rb.transform.position - pos;
+                            Vector3 force = deltaPos.normalized * bombForce;
+                            rb.AddForce(force);
+                        }
+                        
                     }
                 }
             }
+            
 
             explosionFX.transform.position = pos;
             explosionFX.Play();

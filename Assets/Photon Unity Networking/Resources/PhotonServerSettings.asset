@@ -56,4 +56,5 @@ MonoBehaviour:
   - Hurt
   - TakeDamage
   - Explode
+  - ThrowBomb
   DisableAutoOpenWizard: 1

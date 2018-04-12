@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4479987298778646}
   - component: {fileID: 212967389234089418}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: leftEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4108269165072708}
   - component: {fileID: 212988996999055952}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: rightHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4888874686557894}
   - component: {fileID: 82197043120886876}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: -215833656, guid: 0000000000000000d000000000000000, type: 0}
@@ -68,7 +68,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4471321898230600}
   - component: {fileID: 212074922074205098}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: HealthOutline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,7 +84,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4643420327038284}
   - component: {fileID: 212545410242478460}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4428813320689646}
   - component: {fileID: 212906307976908188}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: leftHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,7 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4188382565347736}
   - component: {fileID: 212731788010277032}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: rightEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4888364560157964}
   - component: {fileID: 212373850792993560}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: leftFoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,11 +155,12 @@ GameObject:
   - component: {fileID: 114673586598740600}
   - component: {fileID: 114818115977818318}
   - component: {fileID: 114331248786007450}
+  - component: {fileID: 114456310549555340}
   - component: {fileID: 114838720257519700}
   - component: {fileID: 114484309303322260}
   - component: {fileID: 114502099357648238}
   - component: {fileID: 114684981332067258}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Player2
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -175,7 +176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4164296607827230}
   - component: {fileID: 212386024159429474}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: rightFoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -191,7 +192,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4864388017598722}
   - component: {fileID: 212475837245657210}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: tache
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,7 +208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4852706859985414}
   - component: {fileID: 212625173908404596}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +224,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4422913819117256}
   - component: {fileID: 212353342024896622}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: hat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238,7 +239,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4445594450656032}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: groundCheck
   m_TagString: Untagged
   m_Icon: {fileID: -2065832391, guid: 0000000000000000d000000000000000, type: 0}
@@ -253,7 +254,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4771255597626310}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: healthDisplay
   m_TagString: HealthBar
   m_Icon: {fileID: 0}
@@ -269,7 +270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4174203561481612}
   - component: {fileID: 212602581280771682}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Bazooka
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -801,6 +802,19 @@ MonoBehaviour:
     InterpolateOption: 0
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 0
+--- !u!114 &114456310549555340
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1553721741722602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
 --- !u!114 &114484309303322260
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -812,8 +826,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbad35805b23f4449874466ef7fbc0ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coolingTime: 0.8
   speed: 30
   gun: {fileID: 1132903799800792}
+  initMissileNum: 100
 --- !u!114 &114502099357648238
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -825,9 +841,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c453ee8b013be2340af36e3eaacc1f07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bombLaid: 0
-  bombCount: 1
+  coolingTime: 4
+  initBombNum: 2
   bombsAway: {fileID: 8300000, guid: 2d487c0108565443ba2dea29b521e120, type: 3}
+  gun: {fileID: 1132903799800792}
+  force: 1000
 --- !u!114 &114673586598740600
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -850,6 +868,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114331248786007450}
   - {fileID: 114818115977818318}
+  - {fileID: 114456310549555340}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1

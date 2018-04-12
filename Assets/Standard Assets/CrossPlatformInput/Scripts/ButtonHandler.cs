@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 namespace UnityStandardAssets.CrossPlatformInput
 {
     public class ButtonHandler : MonoBehaviour
@@ -15,13 +16,11 @@ namespace UnityStandardAssets.CrossPlatformInput
 
         private Image img;
 
-        void OnEnable()
-        {
+        void OnEnable() {
             img = GetComponent<Image>();
         }
 
-        public void SetDownState()
-        {
+        public void SetDownState() {
             CrossPlatformInputManager.SetButtonDown(Name);
             img.sprite = activeImg;
         }

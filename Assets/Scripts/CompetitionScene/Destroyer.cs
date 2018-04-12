@@ -40,6 +40,7 @@ namespace AsanCai.Competition {
             }
         }
 
+        //销毁自身
         void DestroyGameObject() {
 
             Destroy(gameObject);

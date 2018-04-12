@@ -75,8 +75,9 @@ GameObject:
   - component: {fileID: 114691785828574258}
   - component: {fileID: 114572991271410380}
   - component: {fileID: 114343748986886432}
+  - component: {fileID: 114152940275942896}
   m_Layer: 0
-  m_Name: rocket
+  m_Name: missile
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -199,6 +200,19 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114152940275942896
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1889097296997490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
 --- !u!114 &114343748986886432
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -285,6 +299,7 @@ MonoBehaviour:
   ownershipTransfer: 0
   ObservedComponents:
   - {fileID: 114343748986886432}
+  - {fileID: 114152940275942896}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
@@ -314,6 +329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosion: {fileID: 1376548852234652, guid: 83031234472f01841be389b4d77daaae, type: 2}
+  damage: 10
 --- !u!198 &198694127142889494
 ParticleSystem:
   m_ObjectHideFlags: 1

@@ -5,7 +5,7 @@ using UnityEngine;
 using Photon;
 
 namespace AsanCai.Competition {
-    public class Rocket : PunBehaviour {
+    public class Missile : PunBehaviour {
         [Tooltip("爆炸效果")]
         public GameObject explosion;
         [Tooltip("导弹造成的伤害")]

@@ -49,6 +49,7 @@ namespace AsanCai.Competition {
         [Tooltip("游戏平手的音效")]
         public AudioClip tieAudio;
 
+        
 
         //倒计时开始时间
         private double startTimer = 0;
@@ -57,9 +58,11 @@ namespace AsanCai.Competition {
         //倒计时
         private double countDown = 0;
         //已加载场景的玩家个数 
-        private int loadedPlayerNum = 0;		
+        private int loadedPlayerNum = 0;
 
-        private GameObject localPlayer = null;
+        //用于获取客户端能控制的角色
+        public GameObject localPlayer { get;private  set; }
+        //用于获取场景主摄像机对象
         private Camera mainCamera;
         private ExitGames.Client.Photon.Hashtable playerCustomProperties;
         //Photon服务器循环时间
@@ -69,8 +72,11 @@ namespace AsanCai.Competition {
         private bool isAliveOfPlayer1;
         private bool isAliveOfPlayer2;
 
-        private void Start() {
+        private void Awake() {
             gm = GetComponent<GameManager>();
+        }
+
+        private void Start() {
             mainCamera = Camera.main;
             isAliveOfPlayer1 = true;
             isAliveOfPlayer2 = true;
@@ -313,6 +319,8 @@ namespace AsanCai.Competition {
                     );
                     
             }
+            //初始化PickupManager
+            PickupManager.pm.Init();
 
             //启用PlayerMove脚本，使玩家对象可以被本地客户端操控
             localPlayer.GetComponent<PlayerController>().enabled = true;
