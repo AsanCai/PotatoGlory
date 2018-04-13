@@ -5,16 +5,16 @@ using UnityEngine;
 using Photon;
 
 namespace AsanCai.Competition {
-    public class BombPickup : PunBehaviour {
-        [Tooltip("捡到炸弹时的音效")]
+    public class HealthPickup : PunBehaviour {
+        [Tooltip("回复的血量")]
+        public int healthBouns = 25;
+        [Tooltip("拾取加血包道具的音效")]
         public AudioClip collect;
-        [Tooltip("增加的炸弹数")]
-        public int bombNum = 1;
 
         private Animator anim;
-        private bool landed = false;
+        private bool landed;
 
-        private LayBombs layBombs;
+        private PlayerHealth playerHealth;
         private bool hasPicked = false;
 
         private void Awake() {
@@ -27,12 +27,13 @@ namespace AsanCai.Competition {
                 hasPicked = true;
                 //让两个客户端同时执行
                 photonView.RPC("PickedUp", PhotonTargets.All);
+                
 
-                layBombs = collision.gameObject.GetComponent<LayBombs>();
-                layBombs.PickUpBomb(bombNum);
+                playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+                playerHealth.Recover(healthBouns);
             }
 
-            if (!landed && collision.tag == "ground") {
+            if (collision.tag == "ground" && !landed) {
                 anim.SetTrigger("Land");
 
                 transform.parent = null;

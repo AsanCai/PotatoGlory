@@ -17,7 +17,8 @@ namespace AsanCai.Competition {
         public int initMissileNum;
 
         //可发射导弹数
-        private int missileCount;
+        [HideInInspector]
+        public int missileCount;
         //获取角色控制脚本引用
         private PlayerController playerCtrl;
         //角色的动画播放器
@@ -41,9 +42,6 @@ namespace AsanCai.Competition {
         private void Start() {
             //初始化missileCount
             missileCount = initMissileNum;
-
-            //初始化导弹数量标签
-            PickupManager.pm.UpdateMissileText(missileCount);
         }
 
 
@@ -65,7 +63,7 @@ namespace AsanCai.Competition {
 
                     //更新剩余的炸弹数
                     missileCount--;
-                    PickupManager.pm.UpdateMissileText(missileCount);
+                    //PickupManager.pm.UpdateMissileText(missileCount);
 
                     //判断是进行技能冷却还是禁用按钮
                     if (missileCount > 0) {

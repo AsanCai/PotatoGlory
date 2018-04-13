@@ -57,4 +57,10 @@ MonoBehaviour:
   - TakeDamage
   - Explode
   - ThrowBomb
+  - UpdateHealthDisplay
+  - UpdateBombNum
+  - AddBomb
+  - ChangeBombNum
+  - PickedUp
+  - AddHp
   DisableAutoOpenWizard: 1

@@ -8,8 +8,8 @@ namespace AsanCai.Competition {
     public class Bomb : PunBehaviour {
         [Tooltip("炸弹的爆炸半径")]
         public float bombRadius = 8f;
-        [Tooltip("角色被炸弹炸到时受到的冲击力")]
-        public float bombForce = 100f;
+        //[Tooltip("角色被炸弹炸到时受到的冲击力")]
+        //public float bombForce = 100f;
         [Tooltip("炸弹对玩家产生伤害")]
         public int damage = 50;
 
@@ -26,14 +26,14 @@ namespace AsanCai.Competition {
         //爆炸粒子特效
         private ParticleSystem explosionFX;
 
-        //炸弹Sprite
-        private SpriteRenderer sprite;
+        ////炸弹Sprite
+        //private SpriteRenderer sprite;
 
         private void Awake() {
             explosionFX = GameObject.
                 FindGameObjectWithTag("ExplosionFX").GetComponent<ParticleSystem>();
 
-            sprite = GetComponent<SpriteRenderer>();
+            //sprite = GetComponent<SpriteRenderer>();
         }
 
         private void Start() {
@@ -66,17 +66,8 @@ namespace AsanCai.Competition {
 
                     if (rb.tag == "Player") {
                         if (PhotonNetwork.isMasterClient) {
-                            en.GetComponent<PlayerHealth>().Hurt(damage, pos, true);
+                            en.GetComponent<PlayerHealth>().Hurt(damage, pos);
                         }
-
-                        //避免玩家被炸飞两次
-                        if (PhotonNetwork.isMasterClient) {
-                            //实现被炸飞的效果
-                            Vector3 deltaPos = rb.transform.position - pos;
-                            Vector3 force = deltaPos.normalized * bombForce;
-                            rb.AddForce(force);
-                        }
-                        
                     }
                 }
             }
@@ -89,11 +80,7 @@ namespace AsanCai.Competition {
 
             AudioSource.PlayClipAtPoint(boom, pos);
 
-            //设置炸弹为不可见
-            sprite.enabled = false;
-
-            //延迟销毁
-            Destroy(gameObject, 1.0f);
+            Destroy(gameObject);
         }
     }
 

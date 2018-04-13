@@ -41,7 +41,12 @@ namespace AsanCai.Competition {
         public Text ticker;
         [Tooltip("玩家的血量条")]
         public Slider hpBar;
-
+        [Tooltip("血量条填充图片")]
+        public Image hpBarFill;
+        [Tooltip("导弹数量信息")]
+        public Text missileText;
+        [Tooltip("炸弹数量信息")]
+        public Text bombText;
         [Tooltip("游戏胜利的音效")]
         public AudioClip gameWinAudio;
         [Tooltip("游戏失败的音效")]
@@ -49,7 +54,8 @@ namespace AsanCai.Competition {
         [Tooltip("游戏平手的音效")]
         public AudioClip tieAudio;
 
-        
+        [Tooltip("退出房间确认面板")]
+        public GameObject confirmPanel;
 
         //倒计时开始时间
         private double startTimer = 0;
@@ -67,10 +73,13 @@ namespace AsanCai.Competition {
         private ExitGames.Client.Photon.Hashtable playerCustomProperties;
         //Photon服务器循环时间
         private const float photonCircleTime = 4294967.295f;
-        private PlayerHealth playerHealth;
-
+        //保存玩家的存活状态
         private bool isAliveOfPlayer1;
         private bool isAliveOfPlayer2;
+
+        private PlayerHealth playerHealth;
+        private LayBombs layBombs;
+        private PlayerShoot playerShoot;
 
         private void Awake() {
             gm = GetComponent<GameManager>();
@@ -117,6 +126,11 @@ namespace AsanCai.Competition {
                 case GameState.Playing:
                     //更新玩家生命值血条的显示
                     hpBar.value = playerHealth.currentHP;
+                    hpBarFill.color = Color.Lerp(
+                        Color.green, Color.red, 1 - hpBar.value * 0.01f);
+
+                    bombText.text = "X " + layBombs.bombCount;
+                    missileText.text = "X " + playerShoot.missileCount;
 
                     //MasterClient检查游戏状态
                     if (PhotonNetwork.isMasterClient) {
@@ -271,7 +285,7 @@ namespace AsanCai.Competition {
                 //使用Photon服务器的时间设置游戏开始时间
                 startTimer = PhotonNetwork.time;
 
-                Debug.Log(string.Format("{0}/{1}", loadedPlayerNum, PhotonNetwork.playerList.Length));
+                //Debug.Log(string.Format("{0}/{1}", loadedPlayerNum, PhotonNetwork.playerList.Length));
                 //使用RPC，所有玩家开始游戏
                 photonView.RPC("StartGame", PhotonTargets.All, startTimer);     
             }
@@ -319,15 +333,14 @@ namespace AsanCai.Competition {
                     );
                     
             }
-            //初始化PickupManager
-            PickupManager.pm.Init();
-
             //启用PlayerMove脚本，使玩家对象可以被本地客户端操控
             localPlayer.GetComponent<PlayerController>().enabled = true;
             //启用PlayerShoot脚本，使玩家对象可以射击
-            localPlayer.GetComponent<PlayerShoot>().enabled = true;
+            playerShoot = localPlayer.GetComponent<PlayerShoot>();
+            playerShoot.enabled = true;
             //启用LayBombs脚本，使玩家可以放置炸弹
-            localPlayer.GetComponent<LayBombs>().enabled = true;
+            layBombs = localPlayer.GetComponent<LayBombs>();
+            layBombs.enabled = true;
 
             //获取玩家对象的PlayerHealth脚本
             playerHealth = localPlayer.GetComponent<PlayerHealth>();
@@ -356,6 +369,14 @@ namespace AsanCai.Competition {
                     isAliveOfPlayer2 = (bool)p.CustomProperties["isAlive"];
                 }
             }
+        }
+
+        //离开房间函数
+        private void LeaveRoom() {
+            //玩家离开游戏房间
+            PhotonNetwork.LeaveRoom();
+            //加载游戏大厅场景
+            PhotonNetwork.LoadLevel("LobbyScene");
         }
         #endregion
 
@@ -388,15 +409,20 @@ namespace AsanCai.Competition {
 
 
         #region 按钮事件处理函数
-
-        //离开房间函数
-        public void LeaveRoom() {
-            //玩家离开游戏房间
-            PhotonNetwork.LeaveRoom();
-            //加载游戏大厅场景
-            PhotonNetwork.LoadLevel("LobbyScene");   
+        //点击退出房间按钮
+        public void ClickExitBtn() {
+            confirmPanel.SetActive(true);
         }
 
+        //点击确认按钮
+        public void ClickConfirmBtn() {
+            LeaveRoom();
+        }
+
+        //点击取消按钮
+        public void ClickCancelBtn() {
+            confirmPanel.SetActive(false);
+        }
         #endregion
     }
 }

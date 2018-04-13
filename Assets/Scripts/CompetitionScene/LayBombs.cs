@@ -19,13 +19,15 @@ namespace AsanCai.Competition {
         public float force;
 
         //可放置炸弹的数量
-        private int bombCount;
+        [HideInInspector]
+        public int bombCount;
         //用于限制玩家放置炸弹
         private bool bombLaid = false;
         //计时器
         private float timer = 0.0f;
         //播放器
         private AudioSource audioSource;
+
 
         private void Awake() {
             audioSource = gun.GetComponent<AudioSource>();
@@ -34,8 +36,8 @@ namespace AsanCai.Competition {
         private void Start() {
             bombCount = initBombNum;
 
-            //初始化导弹数量标签
-            PickupManager.pm.UpdateBombText(bombCount);
+            //同步炸弹数量，确保不同客户端的炸弹数量一样
+            photonView.RPC("UpdateBombNum", PhotonTargets.All, bombCount);
         }
 
 
@@ -48,6 +50,17 @@ namespace AsanCai.Competition {
                 }
             }
 
+            //激活放置炸弹按钮
+            if(ButtonManager.bm.layBombsBtn.ban && bombCount > 0) {
+                ButtonManager.bm.layBombsBtn.SetAxisPositiveState();
+                
+            }
+            //激活发射炸弹按钮
+            if(ButtonManager.bm.throwBombsBtn.ban && bombCount > 0) {
+                ButtonManager.bm.throwBombsBtn.SetAxisPositiveState();
+            }
+
+            //原地放置炸弹
             if (CrossPlatformInputManager.GetButtonDown("Fire2")) {
                 if (!bombLaid && bombCount > 0) {
                     //不能立即放置第二颗炸弹
@@ -56,8 +69,7 @@ namespace AsanCai.Competition {
                     timer = 0.0f;
 
                     //更新剩余的炸弹数
-                    bombCount--;
-                    PickupManager.pm.UpdateBombText(bombCount);
+                    ReleaseBomb(1);
 
                     //判断是进行技能冷却还是禁用按钮
                     if (bombCount > 0) {
@@ -74,6 +86,7 @@ namespace AsanCai.Competition {
                 }
             }
 
+            //射出炸弹
             if (CrossPlatformInputManager.GetButtonDown("Fire3")) {
                 if (!bombLaid && bombCount > 0) {
                     //不能立即放置第二颗炸弹
@@ -82,8 +95,7 @@ namespace AsanCai.Competition {
                     timer = 0.0f;
 
                     //更新剩余的炸弹数
-                    bombCount--;
-                    PickupManager.pm.UpdateBombText(bombCount);
+                    ReleaseBomb(1);
 
                     //判断是进行技能冷却还是禁用按钮
                     if (bombCount > 0) {
@@ -108,19 +120,32 @@ namespace AsanCai.Competition {
             }
         }
 
+        //拾取炸弹
+        public void PickUpBomb(int num) {
+            //确保无论是哪个客户端触发的，都能更新炸弹数量
+            photonView.RPC("AddBomb", PhotonTargets.All, num);
+        }
 
-        public void AddBomb(int num) {
-            int temp = bombCount; 
+        //释放炸弹
+        private void ReleaseBomb(int num) {
+            bombCount -= num;
+            photonView.RPC("UpdateBombNum", PhotonTargets.All, bombCount);
+        }
 
-            bombCount += num;
-            PickupManager.pm.UpdateBombText(bombCount);
 
-            Debug.Log(bombCount);
+        [PunRPC]
+        private void AddBomb(int num) {
+            if (PhotonNetwork.isMasterClient) {
+                bombCount += num;
 
-            if (temp <= 0 && bombCount > 0) {
-                ButtonManager.bm.layBombsBtn.SetAxisPositiveState();
-                ButtonManager.bm.throwBombsBtn.SetAxisPositiveState();
+                photonView.RPC("UpdateBombNum", PhotonTargets.All, bombCount);
             }
+        }
+
+        [PunRPC]
+        //更新炸弹数量
+        private void UpdateBombNum(int num) {
+            bombCount = num;
         }
     }
 }

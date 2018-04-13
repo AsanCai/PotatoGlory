@@ -12,8 +12,6 @@ namespace AsanCai.Competition {
         public float invincibleTime = 2f;
         [Tooltip("角色受到伤害时受到的力，制造击退效果")]
         public float hurtForce = 100f;
-        //[Tooltip("角色被炸弹炸到时受到的冲击力")]
-        //public float bombForce = 100f;
         [Tooltip("受伤害时减少的血量")]
         public int damageAmount = 10;
         [Tooltip("受伤音效")]
@@ -34,11 +32,10 @@ namespace AsanCai.Competition {
         [HideInInspector]
         public bool invincible;   
 
-
         private PlayerController playCtrl;
-
-        private Vector3 healthScale;
         private Animator anim;
+        //用于操作玩家头上的血量条
+        private Vector3 healthScale;
         //用于检测当前是否处于免伤状态
         private float timer;
         //用于设置自定义属性
@@ -98,33 +95,27 @@ namespace AsanCai.Competition {
             //假如撞到怪物
             if (collision.gameObject.tag == "Enemy") {
                 //调用受伤函数
-                TakeDamage(damageAmount, collision.transform.position, false);
+                TakeDamage(damageAmount, collision.transform.position);
             }
         }
 
         #region 公用函数
         //受伤函数
-        public void Hurt(int damage, Vector3 enemyPos, bool bombed = false) {
-            photonView.RPC("TakeDamage", PhotonTargets.All, damage, enemyPos, bombed);
-
-            UpdateHealthDisplay();
+        public void Hurt(int damage, Vector3 enemyPos) {
+            //确保无论是哪个客户端触发的，都能更新血量
+            photonView.RPC("TakeDamage", PhotonTargets.All, damage, enemyPos);
         }
 
-        //更新玩家头上的血量条
-        private  void UpdateHealthDisplay() {
-            //把玩家头上的生命条的颜色逐渐变红
-            healthBar.material.color = Color.Lerp(Color.green, Color.red, 1 - currentHP * 0.01f);
-            //缩短玩家头上的生命条
-            healthBar.transform.localScale = new Vector3(healthScale.x * currentHP * 0.01f, 1, 1);
+        //加血函数
+        public void Recover(int hp) {
+            //确保无论是哪个客户端触发的，都能更新血量
+            photonView.RPC("AddHp", PhotonTargets.All, hp);
         }
 
         //死亡函数
         private void Death() {
-
-            if (photonView.isMine) {
-                //播放死亡动画
-                anim.SetTrigger("Die");
-            }
+            //播放死亡动画，这里死亡动画不需要进行同步
+            anim.SetTrigger("Die");
 
             //角色死亡
             Collider2D[] cols = GetComponents<Collider2D>();
@@ -147,7 +138,7 @@ namespace AsanCai.Competition {
         #region RPC函数
         [PunRPC]
         //受伤函数
-        private void TakeDamage(int damage, Vector3 hitPos, bool bombed = false) {
+        private void TakeDamage(int damage, Vector3 hitPos) {
             //玩家死亡或者无敌，不执行扣血函数
             if (!isAlive || invincible)
                 return;
@@ -157,17 +148,9 @@ namespace AsanCai.Competition {
             //角色不能跳跃
             playCtrl.jump = false;
 
+            Vector3 hurtVector = transform.position - hitPos + Vector3.up * 5f ;
+            GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
 
-            //如果不是被炸弹炸到，需要制造受伤效果
-            if (!bombed) {
-                //给角色加上后退的力，制造击退效果
-                Vector3 hurtVector = transform.position - hitPos + Vector3.up * 5f;
-                GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
-            } else {
-                //给角色加上后退的力，制造击退效果
-                Vector3 hurtVector = transform.position - hitPos;
-                GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
-            }
 
             //随机播放音频
             int i = Random.Range(0, ouchClips.Length);
@@ -179,12 +162,28 @@ namespace AsanCai.Competition {
                 currentHP -= damage;
                 //更新所有客户端，该玩家对象的生命值
                 photonView.RPC("UpdateHP", PhotonTargets.All, currentHP, PhotonNetwork.player);
+                //更新玩家头上血量条的显示
+                photonView.RPC("UpdateHealthDisplay", PhotonTargets.All);
             }
         }
 
+        [PunRPC]
+        private void AddHp(int hp) {
+            //只有主客户端有权限更新血量值
+            if (PhotonNetwork.isMasterClient) {
+                //更新角色的生命值
+                currentHP = currentHP + hp;
+                currentHP = currentHP > 100 ? 100 : currentHP;
+
+                //更新所有客户端，该玩家对象的生命值
+                photonView.RPC("UpdateHP", PhotonTargets.All, currentHP, PhotonNetwork.player);
+                //更新玩家头上血量条的显示
+                photonView.RPC("UpdateHealthDisplay", PhotonTargets.All);
+            }
+        }
 
         [PunRPC]
-        public void UpdateHP(int newHP, PhotonPlayer p) {
+        private void UpdateHP(int newHP, PhotonPlayer p) {
             currentHP = newHP;
 
             if (currentHP <= 0) {
@@ -198,6 +197,16 @@ namespace AsanCai.Competition {
 
             //更新玩家存活状态
             GameManager.gm.UpdateAliveState();
+        }
+
+
+        //更新玩家头上的血量条
+        [PunRPC]
+        private void UpdateHealthDisplay() {
+            //把玩家头上的生命条的颜色逐渐变红
+            healthBar.material.color = Color.Lerp(Color.green, Color.red, 1 - currentHP * 0.01f);
+            //缩短玩家头上的生命条
+            healthBar.transform.localScale = new Vector3(healthScale.x * currentHP * 0.01f, 1, 1);
         }
 
         //RPC函数，设置玩家的无敌状态

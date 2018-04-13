@@ -120,14 +120,14 @@ GameObject:
   - component: {fileID: 61016134683789554}
   - component: {fileID: 58830062248563532}
   - component: {fileID: 95663748785662812}
-  - component: {fileID: 114317607548420432}
-  - component: {fileID: 114740671116423698}
-  - component: {fileID: 114680549342314574}
-  - component: {fileID: 114220826840378526}
+  - component: {fileID: 114681682074613922}
   - component: {fileID: 114568465511931574}
   - component: {fileID: 114297485513374544}
   - component: {fileID: 114876583066703258}
-  - component: {fileID: 114681682074613922}
+  - component: {fileID: 114317607548420432}
+  - component: {fileID: 114680549342314574}
+  - component: {fileID: 114220826840378526}
+  - component: {fileID: 114740671116423698}
   m_Layer: 9
   m_Name: Player1
   m_TagString: Player
@@ -761,7 +761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbad35805b23f4449874466ef7fbc0ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coolingTime: 0.8
+  coolingTime: 0.5
   speed: 30
   gun: {fileID: 1558486692862176}
   initMissileNum: 100
@@ -786,8 +786,8 @@ MonoBehaviour:
   ownershipTransfer: 0
   ObservedComponents:
   - {fileID: 114680549342314574}
-  - {fileID: 114740671116423698}
   - {fileID: 114220826840378526}
+  - {fileID: 114740671116423698}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
@@ -808,7 +808,7 @@ MonoBehaviour:
   jump: 0
   moveForce: 365
   maxSpeed: 5
-  jumpForce: 700
+  jumpForce: 900
   jumpClips:
   - {fileID: 8300000, guid: 50a8d8a939a0f4e77a0dac6ecd2e582b, type: 3}
   - {fileID: 8300000, guid: fc55d077383484ac0ad66aa17fcd746f, type: 3}
@@ -962,6 +962,7 @@ MonoBehaviour:
   bombsAway: {fileID: 8300000, guid: 2d487c0108565443ba2dea29b521e120, type: 3}
   gun: {fileID: 1558486692862176}
   force: 1000
+  bombCount: 0
 --- !u!212 &212047597491700616
 SpriteRenderer:
   m_ObjectHideFlags: 1

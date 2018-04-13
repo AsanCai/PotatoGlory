@@ -17,6 +17,10 @@ namespace AsanCai.Competition {
         [Tooltip("冷却图片")]  
         public Image coolingMask;
 
+
+        //按钮当前是否被禁用
+        [HideInInspector]
+        public bool ban = false;
         //是否需要冷却
         private bool needCooled = false;
         //冷却时间
@@ -25,8 +29,7 @@ namespace AsanCai.Competition {
         private float timer;
         //按钮图片引用
         private Image img;
-        //按钮是否被禁用
-        private bool ban = false;
+        
 
         void OnEnable() {
             timer = coolingTime;
@@ -53,10 +56,13 @@ namespace AsanCai.Competition {
 
         //启用按钮
         public void SetAxisPositiveState() {
-            CrossPlatformInputManager.SetAxisPositive(Name);
+            //被禁用时，启用有效
+            if (ban) {
+                CrossPlatformInputManager.SetAxisPositive(Name);
 
-            banImg.enabled = false;
-            ban = false;
+                banImg.enabled = false;
+                ban = false;
+            }
         }
 
 
