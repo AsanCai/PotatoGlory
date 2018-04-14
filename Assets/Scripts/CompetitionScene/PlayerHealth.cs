@@ -33,10 +33,12 @@ namespace AsanCai.Competition {
         public bool invincible;   
 
         private PlayerController playCtrl;
+        private PlayerShoot playerShoot;
+        private Rigidbody2D body;
         private Animator anim;
         //用于操作玩家头上的血量条
         private Vector3 healthScale;
-        //用于检测当前是否处于免伤状态
+        //计时器
         private float timer;
         //用于设置自定义属性
         private ExitGames.Client.Photon.Hashtable costomProperties;
@@ -44,10 +46,16 @@ namespace AsanCai.Competition {
 
         private void Awake() {
             playCtrl = GetComponent<PlayerController>();
+            playerShoot = GetComponent<PlayerShoot>();
+            body = GetComponent<Rigidbody2D>();
             anim = GetComponent<Animator>();
 
             //初始化必需的值
             currentHP = maxHP;
+            /* ***
+             * 不在这里赋值，而是直接在声明时赋值，炸弹和导弹不能对玩家造成伤害，为什么？
+             * 可能是public会被设置为默认值?
+             * ***/
             isAlive = true;
             invincible = false;
         }
@@ -73,6 +81,7 @@ namespace AsanCai.Competition {
         }
 
         private void Update() {
+
             //不是本地玩家对象，结束函数执行
             if (!photonView.isMine)     
                 return;
@@ -95,7 +104,8 @@ namespace AsanCai.Competition {
             //假如撞到怪物
             if (collision.gameObject.tag == "Enemy") {
                 //调用受伤函数
-                TakeDamage(damageAmount, collision.transform.position);
+                photonView.RPC("TakeDamage", PhotonTargets.All,
+                    damageAmount, collision.transform.position);
             }
         }
 
@@ -114,6 +124,7 @@ namespace AsanCai.Competition {
 
         //死亡函数
         private void Death() {
+
             //播放死亡动画，这里死亡动画不需要进行同步
             anim.SetTrigger("Die");
 
@@ -130,8 +141,8 @@ namespace AsanCai.Competition {
             }
 
             //禁用脚本
-            GetComponent<PlayerController>().enabled = false;
-            GetComponent<PlayerShoot>().enabled = false;
+            playCtrl.enabled = false;
+            playerShoot.enabled = false;
         }
         #endregion
 
@@ -149,7 +160,7 @@ namespace AsanCai.Competition {
             playCtrl.jump = false;
 
             Vector3 hurtVector = transform.position - hitPos + Vector3.up * 5f ;
-            GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
+            body.AddForce(hurtVector * hurtForce);
 
 
             //随机播放音频
@@ -196,7 +207,7 @@ namespace AsanCai.Competition {
             p.SetCustomProperties(costomProperties);
 
             //更新玩家存活状态
-            GameManager.gm.UpdateAliveState();
+            GameManager.gm.UpdateAliveState(player, isAlive);
         }
 
 

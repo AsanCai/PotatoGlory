@@ -27,7 +27,8 @@ namespace AsanCai.Competition {
         private float timer = 0.0f;
         //播放器
         private AudioSource audioSource;
-
+        //当前控制的玩家
+        private int currentPlayer;
 
         private void Awake() {
             audioSource = gun.GetComponent<AudioSource>();
@@ -81,8 +82,10 @@ namespace AsanCai.Competition {
                     }
 
                     AudioSource.PlayClipAtPoint(bombsAway, transform.position);
-                    PhotonNetwork.Instantiate("bomb", transform.position, 
+                    GameObject bomb = PhotonNetwork.Instantiate("bomb", transform.position, 
                         Quaternion.Euler(new Vector3(0, 0, 0)), 0);
+
+                    bomb.GetComponent<Bomb>().CreatedByPlayer(currentPlayer);
                 }
             }
 
@@ -116,8 +119,13 @@ namespace AsanCai.Competition {
                             0,
                             0
                         ));
+                    bomb.GetComponent<Bomb>().CreatedByPlayer(currentPlayer);
                 }
             }
+        }
+
+        public void SetPlayer(int p) {
+            currentPlayer = p;
         }
 
         //拾取炸弹

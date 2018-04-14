@@ -25,12 +25,14 @@ namespace AsanCai.Competition {
         private Animator animator;
         //附在枪口上的播放器
         private AudioSource audioSource;
-        //火箭的实例
-        private GameObject rocket;
+        //创建的导弹实例
+        private GameObject missile;
         //用于限制玩家发射导弹
         private bool shooted = false;
         //计时器
         private float timer = 0.0f;
+        //当前控制的玩家
+        private int currentPlayer;
 
         private void Awake() {
             animator = GetComponent<Animator>();
@@ -45,7 +47,7 @@ namespace AsanCai.Competition {
         }
 
 
-        void Update() {
+        private void Update() {
             if (shooted) {
                 timer += Time.deltaTime;
 
@@ -61,9 +63,10 @@ namespace AsanCai.Competition {
                     //重置计时器
                     timer = 0.0f;
 
-                    //更新剩余的炸弹数
-                    missileCount--;
-                    //PickupManager.pm.UpdateMissileText(missileCount);
+                    //能对玩家造成伤害时才更新导弹数
+                    if (GameManager.gm.hurtOtherPlayer) {
+                        missileCount--;
+                    }
 
                     //判断是进行技能冷却还是禁用按钮
                     if (missileCount > 0) {
@@ -83,16 +86,24 @@ namespace AsanCai.Competition {
                      * 所以需要在导弹prefab上添加（Photon Transform View）并同步该脚本
                      ******************************************************************/
                     if (playerCtrl.facingRight) {
-                        rocket = PhotonNetwork.Instantiate("missile", gun.transform.position, Quaternion.Euler(new Vector3(0, 0, 0)), 0);
+                        missile = PhotonNetwork.Instantiate("missile", gun.transform.position, Quaternion.Euler(new Vector3(0, 0, 0)), 0);
 
-                        rocket.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, 0);
+                        missile.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, 0);
+
+                        missile.GetComponent<Missile>().CreatedByPlayer(currentPlayer);
                     } else {
-                        rocket = PhotonNetwork.Instantiate("missile", gun.transform.position, Quaternion.Euler(new Vector3(0, 0, 180)), 0);
+                        missile = PhotonNetwork.Instantiate("missile", gun.transform.position, Quaternion.Euler(new Vector3(0, 0, 180)), 0);
 
-                        rocket.GetComponent<Rigidbody2D>().velocity = new Vector2(-speed, 0);
+                        missile.GetComponent<Rigidbody2D>().velocity = new Vector2(-speed, 0);
+
+                        missile.GetComponent<Missile>().CreatedByPlayer(currentPlayer);
                     }
                 }
             }
+        }
+
+        public void SetPlayer(int p) {
+            currentPlayer = p;
         }
     }
 

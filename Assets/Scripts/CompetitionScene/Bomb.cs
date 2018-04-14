@@ -8,8 +8,6 @@ namespace AsanCai.Competition {
     public class Bomb : PunBehaviour {
         [Tooltip("炸弹的爆炸半径")]
         public float bombRadius = 8f;
-        //[Tooltip("角色被炸弹炸到时受到的冲击力")]
-        //public float bombForce = 100f;
         [Tooltip("炸弹对玩家产生伤害")]
         public int damage = 50;
 
@@ -19,25 +17,26 @@ namespace AsanCai.Competition {
         public AudioClip fuse;
         [Tooltip("炸弹倒计时时间")]
         public float fuseTime = 3f;
-
         [Tooltip("爆炸白光特效")]
         public GameObject explosion;
 
+        //用于保存是哪个玩家实例化的
+        [HideInInspector]
+        private int player;
         //爆炸粒子特效
         private ParticleSystem explosionFX;
 
-        ////炸弹Sprite
-        //private SpriteRenderer sprite;
+        private PlayerHealth playerHealth;
 
         private void Awake() {
             explosionFX = GameObject.
                 FindGameObjectWithTag("ExplosionFX").GetComponent<ParticleSystem>();
-
-            //sprite = GetComponent<SpriteRenderer>();
         }
 
         private void Start() {
-            if (transform.root == transform)
+            //只有主客户端才能发起协程
+            //避免两个客户端都发起协程，重复调用
+            if (transform.root == transform && PhotonNetwork.isMasterClient)
                 StartCoroutine(BombDetonation());
         }
 
@@ -61,12 +60,20 @@ namespace AsanCai.Competition {
 
                 if (rb != null) {
                     if (rb.tag == "Enemy") {
-                        //rb.gameObject.GetComponent<Enemy>().HP = 0;
+                        if (PhotonNetwork.isMasterClient) {
+                            Enemy enemy = en.GetComponent<Enemy>();
+
+                            enemy.Hurt(enemy.maxHP, pos, player);
+                        }
                     }
 
                     if (rb.tag == "Player") {
-                        if (PhotonNetwork.isMasterClient) {
-                            en.GetComponent<PlayerHealth>().Hurt(damage, pos);
+                        playerHealth = en.GetComponent<PlayerHealth>();
+                        //当能对其他玩家造成伤害且玩家不为无敌状态时，炸弹才能对玩家造成伤害
+                        if (GameManager.gm.hurtOtherPlayer && !playerHealth.invincible) {
+                            if (PhotonNetwork.isMasterClient) {
+                                en.GetComponent<PlayerHealth>().Hurt(damage, pos);
+                            }
                         }
                     }
                 }
@@ -81,6 +88,16 @@ namespace AsanCai.Competition {
             AudioSource.PlayClipAtPoint(boom, pos);
 
             Destroy(gameObject);
+        }
+
+
+        public void CreatedByPlayer(int p) {
+            photonView.RPC("SetPlayer", PhotonTargets.All, p);
+        }
+
+        [PunRPC]
+        private void SetPlayer(int p) {
+            player = p;
         }
     }
 

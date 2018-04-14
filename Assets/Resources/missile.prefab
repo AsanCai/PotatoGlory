@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4118488657837544}
   - component: {fileID: 212246770285318604}
   - component: {fileID: 95079282940698142}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: flame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 198694127142889494}
   - component: {fileID: 199086055179769590}
   - component: {fileID: 114662985768118642}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4177341043353692}
   - component: {fileID: 212911409366263992}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: rocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,9 +76,9 @@ GameObject:
   - component: {fileID: 114572991271410380}
   - component: {fileID: 114343748986886432}
   - component: {fileID: 114152940275942896}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: missile
-  m_TagString: Bullet
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

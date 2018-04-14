@@ -10,7 +10,7 @@ namespace AsanCai.Competition {
         public GameObject splash;
 
         private GameObject cam;
-        private PlayerHealth playHealth;
+        private PlayerHealth playerHealth;
 
         private void Awake() {
             cam = GameObject.FindGameObjectWithTag("MainCamera");
@@ -20,11 +20,10 @@ namespace AsanCai.Competition {
             if (collision.gameObject.tag == "Player") {
                 cam.GetComponent<CameraFollow>().enabled = false;
 
-                bool isAlive = (bool)PhotonNetwork.player.CustomProperties["isAlive"];
+                playerHealth = collision.GetComponent<PlayerHealth>();
 
-                if (isAlive) {
-                    playHealth = collision.gameObject.GetComponent<PlayerHealth>();
-                    playHealth.Hurt(playHealth.maxHP, collision.transform.position);
+                if (playerHealth.isAlive) {
+                    playerHealth.Hurt(playerHealth.maxHP, collision.transform.position);
                 }
 
                 //这里不能删去玩家对象，否则会出现同步错误

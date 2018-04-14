@@ -9,10 +9,10 @@ TagManager:
   - Enemy
   - Wall
   - Obstacle
-  - Bullet
   - BombPickup
   - ExplosionFX
   - HealthBar
+  - Missile
   layers:
   - Default
   - TransparentFX
@@ -27,7 +27,7 @@ TagManager:
   - Enemies
   - Pickups
   - Ground
-  - 
+  - Missile
   - 
   - 
   - 

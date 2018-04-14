@@ -63,4 +63,10 @@ MonoBehaviour:
   - ChangeBombNum
   - PickedUp
   - AddHp
+  - UpdateScore
+  - UpdateHp
+  - AddScoreOfPlayer
+  - EndCompetitionGame
+  - EndCooperationGame
+  - SetPlayerAliveState
   DisableAutoOpenWizard: 1

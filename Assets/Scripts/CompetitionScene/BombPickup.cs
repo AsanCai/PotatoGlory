@@ -43,6 +43,8 @@ namespace AsanCai.Competition {
 
         [PunRPC]
         private void PickedUp() {
+            hasPicked = true;
+
             AudioSource.PlayClipAtPoint(collect, transform.position);
             Destroy(transform.root.gameObject);
         }

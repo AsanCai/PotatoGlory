@@ -11,12 +11,11 @@ namespace AsanCai.Competition {
         [Tooltip("导弹造成的伤害")]
         public int damage = 10;
 
-        private PlayerHealth playerHealth;
+        //用于保存是哪个玩家实例化的
+        [HideInInspector]
+        private int player;
 
-        void Start() {
-            //如果在2秒内没有被销毁，就由这行代码销毁
-            Destroy(gameObject, 2);
-        }
+        private PlayerHealth playerHealth;
 
         [PunRPC]
         void OnExplode(Vector3 pos) {
@@ -33,38 +32,35 @@ namespace AsanCai.Competition {
         private void OnTriggerEnter2D(Collider2D collision) {
             //若子弹打中Enemy，那么调用Enemy的Hurt函数
             if (collision.tag == "Enemy") {
+                Enemy enemy = collision.GetComponent<Enemy>();
 
-                collision.gameObject.GetComponent<Enemy>().Hurt();
+                enemy.Hurt(enemy.damage, transform.position, player);
 
                 photonView.RPC("OnExplode", PhotonTargets.All, transform.position);
-                OnExplode(transform.position);
-
-            } else if (collision.tag == "BombPickUp") {
-                //collision.gameObject.GetComponent<Bomb>().Explode();
-
-                //Destroy(collision.transform.root.gameObject);
-
-                //Destroy(gameObject);
-
 
             } else if(collision.tag == "Player") {
-                playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-
-                //当玩家为无敌状态时，不做任何操作
-                if (playerHealth.invincible) {
-                    return;
+                playerHealth = collision.GetComponent<PlayerHealth>();
+                //当能对其他玩家造成伤害或者玩家不为无敌状态时，对其造成伤害
+                if (GameManager.gm.hurtOtherPlayer || !playerHealth.invincible) {
+                    //调用受击函数
+                    playerHealth.Hurt(damage, transform.position);
+                    //调用爆炸函数
+                    photonView.RPC("OnExplode", PhotonTargets.All, transform.position);
                 }
-
-                //调用受击函数
-                playerHealth.Hurt(damage, transform.position);
-
-                //调用爆炸函数
-                photonView.RPC("OnExplode", PhotonTargets.All, transform.position);
-
             } else {
                 //调用爆炸函数
                 photonView.RPC("OnExplode", PhotonTargets.All, transform.position);
             }
+        }
+
+
+        public void CreatedByPlayer(int p) {
+            photonView.RPC("SetPlayer", PhotonTargets.All, p);
+        }
+
+        [PunRPC]
+        private void SetPlayer(int p) {
+            player = p;
         }
     }
 }

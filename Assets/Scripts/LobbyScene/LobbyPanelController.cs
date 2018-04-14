@@ -202,6 +202,7 @@ public class LobbyPanelController : PunBehaviour {
     //"创建房间"按钮事件处理函数
     public void ClickCreateRoomButton() {
         createRoomPanel.SetActive(true);
+        roomPanel.SetActive(false);
     }
 
     //"快速开始"按钮时间处理函数
@@ -233,8 +234,10 @@ public class LobbyPanelController : PunBehaviour {
 	 * 禁用游戏大厅面板，启用游戏房间面板
 	 ****************************************************************/
     public override void OnJoinedRoom() {
-        lobbyPanel.SetActive(false);
         roomPanel.SetActive(true);
+
+        lobbyPanel.SetActive(false);
+        createRoomPanel.SetActive(false);
     }
 
     /*****************************************************************

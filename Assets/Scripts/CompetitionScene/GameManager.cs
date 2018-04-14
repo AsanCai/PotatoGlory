@@ -17,11 +17,10 @@ namespace AsanCai.Competition {
             GameLose,               //游戏失败
             Tie                     //平手
         }
-
-
         [HideInInspector]
         public GameState state = GameState.PreStart;
-
+        [Tooltip("能否对其他玩家造成伤害")]
+        public bool hurtOtherPlayer = true;
         [Tooltip("玩家1出生点")]
         public Transform playerOneSpawnTransform;
         [Tooltip("玩家2出生点")]
@@ -56,6 +55,8 @@ namespace AsanCai.Competition {
 
         [Tooltip("退出房间确认面板")]
         public GameObject confirmPanel;
+        [Tooltip("控制面板")]
+        public GameObject mobileCtrl;
 
         //倒计时开始时间
         private double startTimer = 0;
@@ -67,15 +68,15 @@ namespace AsanCai.Competition {
         private int loadedPlayerNum = 0;
 
         //用于获取客户端能控制的角色
-        public GameObject localPlayer { get;private  set; }
+        private GameObject localPlayer;
         //用于获取场景主摄像机对象
         private Camera mainCamera;
         private ExitGames.Client.Photon.Hashtable playerCustomProperties;
         //Photon服务器循环时间
         private const float photonCircleTime = 4294967.295f;
         //保存玩家的存活状态
-        private bool isAliveOfPlayer1;
-        private bool isAliveOfPlayer2;
+        private bool isAliveOfPlayer1 = true;
+        private bool isAliveOfPlayer2 = true;
 
         private PlayerHealth playerHealth;
         private LayBombs layBombs;
@@ -103,7 +104,6 @@ namespace AsanCai.Competition {
         }
 
         void Update() {
-
             //计算倒计时
             countDown = endTimer - PhotonNetwork.time;  
             //防止entTimer值超过Photon服务器循环时间，确保倒计时能正确结束
@@ -130,27 +130,65 @@ namespace AsanCai.Competition {
                         Color.green, Color.red, 1 - hpBar.value * 0.01f);
 
                     bombText.text = "X " + layBombs.bombCount;
-                    missileText.text = "X " + playerShoot.missileCount;
+                    
+                    if (hurtOtherPlayer) {
+                        missileText.text = "X " + playerShoot.missileCount;
 
-                    //MasterClient检查游戏状态
-                    if (PhotonNetwork.isMasterClient) {
-                        
-                        //玩家2死亡，玩家1获胜
-                        if (isAliveOfPlayer1 && !isAliveOfPlayer2) {
-                            photonView.RPC("EndGame", 
-                                PhotonTargets.All, "Player1", PhotonNetwork.time);
+                        //竞技模式下的游戏逻辑
+                        if (PhotonNetwork.isMasterClient) {
+                            if (isAliveOfPlayer1) {
+                                if (!isAliveOfPlayer2) {
+                                    //玩家2死亡，玩家1存活，玩家1获胜
+                                    photonView.RPC("EndCompetitionGame",
+                                        PhotonTargets.All, "Player1", PhotonNetwork.time);
+                                } else {
+                                    //玩家1、2都存活，时间耗尽，平局
+                                    if(countDown < 0.0f) {
+                                        photonView.RPC("EndCompetitionGame",
+                                            PhotonTargets.All, "Tie", PhotonNetwork.time);
+                                    }
+                                }
+                            } else {
+                                //玩家1死亡，玩家2存活，玩家2获胜
+                                if (isAliveOfPlayer2) {
+                                    photonView.RPC("EndCompetitionGame",
+                                        PhotonTargets.All, "Player2", PhotonNetwork.time);
+                                } else {
+                                    //玩家1、2都死亡，平局
+                                    photonView.RPC("EndCompetitionGame",
+                                        PhotonTargets.All, "Tie", PhotonNetwork.time);
+                                }
+                            }
                         }
-                        //玩家1死亡，玩家2获胜
-                        if (!isAliveOfPlayer1 && isAliveOfPlayer2) {
-                            photonView.RPC("EndGame",
-                                PhotonTargets.All, "Player2", PhotonNetwork.time);
+                    } else {
+                        //本地角色死亡，禁用控制面板
+                        if(playerHealth.isAlive == false) {
+                            mobileCtrl.SetActive(false);
+
+                            gameResult.text = "观战中";
                         }
-                        //倒计时结束，玩家1、玩家2都存活，平手
-                        if (countDown < 0.0f && isAliveOfPlayer1 && isAliveOfPlayer2) {
-                            photonView.RPC("EndGame",
-                                PhotonTargets.All, "Tie", PhotonNetwork.time);
+
+                        //闯关模式下的游戏逻辑
+                        if (PhotonNetwork.isMasterClient) {                            //分数达到目标，直接获胜
+                            if(ScoreManager.sm.currentScore >= ScoreManager.sm.targetScore) {
+                                photonView.RPC("EndCooperationGame",
+                                    PhotonTargets.All, "Win", PhotonNetwork.time);
+                            } else {
+                                //玩家全部死亡，失败
+                                if(!isAliveOfPlayer1 && !isAliveOfPlayer2) {
+                                    photonView.RPC("EndCooperationGame",
+                                        PhotonTargets.All, "Lose", PhotonNetwork.time);
+                                } else {
+                                    //时间耗尽，失败
+                                    if(countDown < 0.0f) {
+                                        photonView.RPC("EndCooperationGame",
+                                            PhotonTargets.All, "Lose", PhotonNetwork.time);
+                                    }
+                                }
+                            }
                         }
                     }
+
                     break;
                 //游戏胜利状态，倒计时结束，退出游戏房间
                 case GameState.GameWin:     
@@ -202,39 +240,72 @@ namespace AsanCai.Competition {
 
         //游戏结束，更改客户端的游戏状态
         [PunRPC]
-        void EndGame(string winTeam, double timer) {
-            //如果两队不是平手，游戏结束信息显示获胜队伍胜利
-            if (winTeam != "Tie")
-                gameResult.text = winTeam + " Wins!";
-
+        void EndCompetitionGame(string winTeam, double timer) {
             //如果两队打平
-            if (winTeam == "Tie")           
-            {
+            if (winTeam == "Tie") {
                 //游戏状态切换为平手状态
                 gm.state = GameState.Tie;
                 //播放平手音效
-                //AudioSource.PlayClipAtPoint(tieAudio, localPlayer.transform.position);
+                AudioSource.PlayClipAtPoint(tieAudio, localPlayer.transform.position);
 
                 //游戏结束信息显示"Tie!"表示平手
-                gameResult.text = "Tie!";   
-            } else if (winTeam == PhotonNetwork.player.CustomProperties["Player"].ToString()) {
-                //游戏状态切换为游戏胜利状态
-                gm.state = GameState.GameWin;       
-
-                //播放游戏胜利音效
-                //AudioSource.PlayClipAtPoint(gameWinAudio, localPlayer.transform.position);
-
+                gameResult.text = "Tie!";
             } else {
-                //如果玩家属于失败队伍
-                //游戏状态切换为游戏失败状态
-                gm.state = GameState.GameLose;   
-                
-                //播放游戏失败音效
-                //AudioSource.PlayClipAtPoint(gameLoseAudio, localPlayer.transform.position);
+                if (winTeam == PhotonNetwork.player.CustomProperties["Player"].ToString()) {
+                    //游戏状态切换为游戏胜利状态
+                    gm.state = GameState.GameWin;
+                    gameResult.text = "You Win!";
+                    //播放游戏胜利音效
+                    AudioSource.PlayClipAtPoint(gameWinAudio, localPlayer.transform.position);
+
+                } else {
+                    //如果玩家属于失败队伍
+                    //游戏状态切换为游戏失败状态
+                    gm.state = GameState.GameLose;
+                    gameResult.text = "You Lose!";
+                    //播放游戏失败音效
+                    AudioSource.PlayClipAtPoint(gameLoseAudio, localPlayer.transform.position);
+                }
             }
 
             //设置游戏结束倒计时时间
             SetTime(timer, gameOverTime);   
+        }
+
+
+        [PunRPC]
+        void EndCooperationGame(string result, double timer) {
+
+            if (result == "Win") {
+                //游戏状态切换为游戏胜利状态
+                gm.state = GameState.GameWin;
+                gameResult.text = "Win!";
+                //播放游戏胜利音效
+                AudioSource.PlayClipAtPoint(gameWinAudio, localPlayer.transform.position);
+            } else {
+                //如果玩家属于失败队伍
+                //游戏状态切换为游戏失败状态
+                gm.state = GameState.GameLose;
+                gameResult.text = "Lose!";
+                //播放游戏失败音效
+                AudioSource.PlayClipAtPoint(gameLoseAudio, localPlayer.transform.position);
+            }
+
+            //设置游戏结束倒计时时间
+            SetTime(timer, gameOverTime);
+        }
+
+        [PunRPC]
+        private void SetPlayerAliveState(int player, bool alive) {
+            if (PhotonNetwork.isMasterClient) {
+                if(player == 1) {
+                    isAliveOfPlayer1 = alive;
+                }
+
+                if(player == 2) {
+                    isAliveOfPlayer2 = alive;
+                }
+            }
         }
         #endregion
 
@@ -259,13 +330,12 @@ namespace AsanCai.Competition {
                     playerTwoNum++;
             }
 
-
-            //如果有某队伍人数为0，另一队获胜
+            //玩家1中途退出游戏，视为死亡
             if (playerOneNum == 0) {
-                photonView.RPC("EndGame", PhotonTargets.All, "Player2", PhotonNetwork.time);
+                photonView.RPC("SetPlayerAliveState", PhotonTargets.All, 1, false);;
             }
             if (playerTwoNum == 0) {
-                photonView.RPC("EndGame", PhotonTargets.All, "Player1", PhotonNetwork.time);
+                photonView.RPC("SetPlayerAliveState", PhotonTargets.All, 2, false);
             }
         }
 
@@ -294,10 +364,13 @@ namespace AsanCai.Competition {
         //生成玩家对象
         void InstantiatePlayer() {
             //获取玩家自定义属性
-            playerCustomProperties = PhotonNetwork.player.CustomProperties; 
+            playerCustomProperties = PhotonNetwork.player.CustomProperties;
+            int player = 0;
             
             //如果玩家是Player1，生成Player1对象
             if (playerCustomProperties["Player"].ToString().Equals("Player1")) {
+                player = 1;
+
                 localPlayer = PhotonNetwork.Instantiate("Player1",
                     playerOneSpawnTransform.position, Quaternion.identity, 0);
 
@@ -316,6 +389,8 @@ namespace AsanCai.Competition {
             }
             //如果玩家是Player2，生成Player2对象
             if (playerCustomProperties["Player"].ToString().Equals("Player2")) {
+                player = 2;
+
                 localPlayer = PhotonNetwork.Instantiate("Player2", 
                     playerTwoSpawnTransform.position, Quaternion.identity, 0);
 
@@ -330,17 +405,18 @@ namespace AsanCai.Competition {
                     playerTwoSpawnTransform.position.x,
                     playerTwoSpawnTransform.position.y,
                     mainCamera.transform.position.z
-                    );
-                    
+                    );    
             }
             //启用PlayerMove脚本，使玩家对象可以被本地客户端操控
             localPlayer.GetComponent<PlayerController>().enabled = true;
             //启用PlayerShoot脚本，使玩家对象可以射击
             playerShoot = localPlayer.GetComponent<PlayerShoot>();
             playerShoot.enabled = true;
+            playerShoot.SetPlayer(player);
             //启用LayBombs脚本，使玩家可以放置炸弹
             layBombs = localPlayer.GetComponent<LayBombs>();
             layBombs.enabled = true;
+            layBombs.SetPlayer(player);
 
             //获取玩家对象的PlayerHealth脚本
             playerHealth = localPlayer.GetComponent<PlayerHealth>();
@@ -354,21 +430,9 @@ namespace AsanCai.Competition {
         }
 
         //获取当前玩家的存活状态
-        public void UpdateAliveState() {
-            //获取房间内所有玩家的信息
-            PhotonPlayer[] players = PhotonNetwork.playerList;  
-
-            //遍历房间内所有玩家，将他们的得分根据他们的队伍放入对应的队伍列表中
-            foreach (PhotonPlayer p in players) {
-                if (p.CustomProperties["Player"].ToString() == "Player1") {
-                    isAliveOfPlayer1 = (bool)p.CustomProperties["isAlive"];
-                    
-                }
-
-                if (p.CustomProperties["Player"].ToString() == "Player2") {
-                    isAliveOfPlayer2 = (bool)p.CustomProperties["isAlive"];
-                }
-            }
+        public void UpdateAliveState(int player, bool alive) {
+            //更新当前存活状态
+            photonView.RPC("SetPlayerAliveState", PhotonTargets.All, player, alive);
         }
 
         //离开房间函数

@@ -38,7 +38,7 @@ namespace AsanCai.Competition {
             }
         }
 
-        public IEnumerator DeliverPickup(float time) {
+        private IEnumerator DeliverPickup(float time) {
             //生成道具的间隔时间
             yield return new WaitForSeconds(time);
 
@@ -50,7 +50,7 @@ namespace AsanCai.Competition {
 
             PhotonNetwork.Instantiate(pickupsName[index], dropPos, Quaternion.identity, 0);
 
-            float nextTime = Random.Range(time, time * 2);
+            float nextTime = Random.Range(pickupDeliveryTime, pickupDeliveryTime * 2);
 
             StartCoroutine(DeliverPickup(nextTime));
         }

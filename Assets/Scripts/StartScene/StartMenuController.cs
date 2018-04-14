@@ -109,7 +109,6 @@ public class StartMenuController : PunBehaviour {
         PhotonNetwork.player.NickName = name;
         //将玩家昵称保存在本地
         PlayerPrefs.SetString("Username", name);
-        Debug.Log(PhotonNetwork.player.NickName);
     }
 
     //点击返回按钮
