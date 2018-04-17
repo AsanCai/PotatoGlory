@@ -7,4 +7,4 @@ PhysicsMaterial2D:
   m_PrefabInternal: {fileID: 0}
   m_Name: Bomb
   friction: 0.4
-  bounciness: 1
+  bounciness: 0.3
