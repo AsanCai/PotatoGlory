@@ -18,24 +18,24 @@
 
 3. 游戏截图
 
-![游戏主界面](https://github.com/AsanCai/2D-Shooter/tree/android/Images/img1.png)
+![游戏主界面](https://github.com/AsanCai/2D-Shooter/raw/android/Images/img1.png)
 
-![游戏大厅](https://github.com/AsanCai/2D-Shooter/tree/android/Images/img2.png)
+![游戏大厅](https://github.com/AsanCai/2D-Shooter/raw/android/Images/img2.png)
 
-![创建房间](https://github.com/AsanCai/2D-Shooter/tree/android/Images/img3.png)
+![创建房间](https://github.com/AsanCai/2D-Shooter/raw/android/Images/img3.png)
 
-![创建房间成功](https://github.com/AsanCai/2D-Shooter/tree/android/Images/img4.png)
+![创建房间成功](https://github.com/AsanCai/2D-Shooter/raw/android/Images/img4.png)
 
-![加入房间](https://github.com/AsanCai/2D-Shooter/tree/android/Images/img5.png)
+![加入房间](https://github.com/AsanCai/2D-Shooter/raw/android/Images/img5.png)
 
-![准备开始](https://github.com/AsanCai/2D-Shooter/tree/android/Images/img6.png)
+![准备开始](https://github.com/AsanCai/2D-Shooter/raw/android/Images/img6.png)
 
-![开始游戏](https://github.com/AsanCai/2D-Shooter/tree/android/Images/img7.png)
+![开始游戏](https://github.com/AsanCai/2D-Shooter/raw/android/Images/img7.png)
 
-![游戏失败](https://github.com/AsanCai/2D-Shooter/tree/android/Images/img8.png)
+![游戏失败](https://github.com/AsanCai/2D-Shooter/raw/android/Images/img8.png)
 
 ---
 
 4. 项目感想
-因为Photon的官网上没有对Api的详细说明，只能自己看着官方demo自己研究每个api的用法，踩了无数个坑。此外，由于一开始对Unity3d的运用也不是很熟练，我花费了很多时间解决了很多之前没想过的小问题。再加上最后自己在服务器上搭建数据库编写服务器程序的时候也踩了很多坑，这个项目的制作过程可以说是十分艰难。但踩完这么多坑之后，我也收获颇丰，因此我打算在[个人博客](asancai.github.io)写一个系列教程，与大家分享交流。
+因为Photon的官网上没有对Api的详细说明，只能自己看着官方demo自己研究每个api的用法，踩了无数个坑。此外，由于一开始对Unity3d的运用也不是很熟练，我花费了很多时间解决了很多之前没想过的小问题。再加上最后自己在服务器上搭建数据库编写服务器程序的时候也踩了很多坑，这个项目的制作过程可以说是十分艰难。但踩完这么多坑之后，我也收获颇丰，因此我打算重新整理整个项目之后，在[个人博客](asancai.github.io)写一个系列教程，与大家分享交流。
 
