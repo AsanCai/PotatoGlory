@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class PickupManager : PunBehaviour {
         [Tooltip("保存道具预设")]
         public GameObject[] pickups;

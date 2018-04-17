@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class BombPickup : PunBehaviour {
         [Tooltip("捡到炸弹时的音效")]
         public AudioClip collect;

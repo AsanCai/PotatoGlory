@@ -5,7 +5,7 @@ using UnityStandardAssets.CrossPlatformInput;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class LayBombs : PunBehaviour{
         [Tooltip("放置炸弹的间隔时间")]
         public float coolingTime;
@@ -124,6 +124,7 @@ namespace AsanCai.Competition {
             }
         }
 
+        #region 公用成员函数
         public void SetPlayer(int p) {
             currentPlayer = p;
         }
@@ -139,8 +140,9 @@ namespace AsanCai.Competition {
             bombCount -= num;
             photonView.RPC("UpdateBombNum", PhotonTargets.All, bombCount);
         }
+        #endregion
 
-
+        #region RPC函数
         [PunRPC]
         private void AddBomb(int num) {
             if (PhotonNetwork.isMasterClient) {
@@ -155,5 +157,6 @@ namespace AsanCai.Competition {
         private void UpdateBombNum(int num) {
             bombCount = num;
         }
+        #endregion
     }
 }

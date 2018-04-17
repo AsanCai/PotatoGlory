@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class KillTrigger : PunBehaviour {
 
         public GameObject splash;

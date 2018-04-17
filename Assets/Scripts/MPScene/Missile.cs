@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class Missile : PunBehaviour {
         [Tooltip("爆炸效果")]
         public GameObject explosion;
@@ -17,16 +17,7 @@ namespace AsanCai.Competition {
 
         private PlayerHealth playerHealth;
 
-        [PunRPC]
-        void OnExplode(Vector3 pos) {
-            //随机生成一个四元数
-            Quaternion randomRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
-            //实例化爆炸对象
-            Instantiate(explosion, pos, randomRotation);
-            
-            //销毁自身
-            Destroy(gameObject);
-        }
+        
 
 
         private void OnTriggerEnter2D(Collider2D collision) {
@@ -41,7 +32,7 @@ namespace AsanCai.Competition {
             } else if(collision.tag == "Player") {
                 playerHealth = collision.GetComponent<PlayerHealth>();
                 //当能对其他玩家造成伤害或者玩家不为无敌状态时，对其造成伤害
-                if (GameManager.gm.hurtOtherPlayer || !playerHealth.invincible) {
+                if (GameManager.gm.hurtOtherPlayer && !playerHealth.invincible) {
                     //调用受击函数
                     playerHealth.Hurt(damage, transform.position);
                     //调用爆炸函数
@@ -58,9 +49,22 @@ namespace AsanCai.Competition {
             photonView.RPC("SetPlayer", PhotonTargets.All, p);
         }
 
+        #region RPC函数
         [PunRPC]
         private void SetPlayer(int p) {
             player = p;
         }
+
+        [PunRPC]
+        void OnExplode(Vector3 pos) {
+            //随机生成一个四元数
+            Quaternion randomRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
+            //实例化爆炸对象
+            Instantiate(explosion, pos, randomRotation);
+
+            //销毁自身
+            Destroy(gameObject);
+        }
+        #endregion
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class ScoreManager : PunBehaviour {
         [HideInInspector]
         public static ScoreManager sm;
@@ -60,21 +60,7 @@ namespace AsanCai.Competition {
             }
         }
 
-        //玩家增加分数
-        [PunRPC]
-        private void AddScoreOfPlayer(int player, int score) {
-            if (PhotonNetwork.isMasterClient) {
-                if(player == 1) {
-                    scoreOfPlayer1 += score;
-                }
-
-                if(player == 2) {
-                    scoreOfPlayer2 += score;
-                }
-
-                photonView.RPC("UpdateScore", PhotonTargets.All, 1, scoreOfPlayer1);
-            }
-        }
+        
 
 
         #region 按钮点击函数
@@ -88,6 +74,7 @@ namespace AsanCai.Competition {
         }
         #endregion
 
+        #region RPC函数
         [PunRPC]
         private void UpdateScore(int player, int score) {
             if(player == 1) {
@@ -100,5 +87,22 @@ namespace AsanCai.Competition {
 
             currentScore = scoreOfPlayer1 + scoreOfPlayer2;
         }
+
+        //玩家增加分数
+        [PunRPC]
+        private void AddScoreOfPlayer(int player, int score) {
+            if (PhotonNetwork.isMasterClient) {
+                if (player == 1) {
+                    scoreOfPlayer1 += score;
+                }
+
+                if (player == 2) {
+                    scoreOfPlayer2 += score;
+                }
+
+                photonView.RPC("UpdateScore", PhotonTargets.All, 1, scoreOfPlayer1);
+            }
+        }
+        #endregion
     }
 }

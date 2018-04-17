@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class Bomb : PunBehaviour {
         [Tooltip("炸弹的爆炸半径")]
         public float bombRadius = 8f;
@@ -40,6 +40,11 @@ namespace AsanCai.Competition {
                 StartCoroutine(BombDetonation());
         }
 
+        #region 公共成员函数
+        public void CreatedByPlayer(int p) {
+            photonView.RPC("SetPlayer", PhotonTargets.All, p);
+        }
+
         IEnumerator BombDetonation() {
             AudioSource.PlayClipAtPoint(fuse, transform.position);
 
@@ -48,7 +53,9 @@ namespace AsanCai.Competition {
             //调用爆炸函数
             photonView.RPC("Explode", PhotonTargets.All, transform.position);
         }
+        #endregion
 
+        #region RPC函数
         [PunRPC]
         public void Explode(Vector3 pos) {
 
@@ -72,7 +79,7 @@ namespace AsanCai.Competition {
                         //当能对其他玩家造成伤害且玩家不为无敌状态时，炸弹才能对玩家造成伤害
                         if (GameManager.gm.hurtOtherPlayer && !playerHealth.invincible) {
                             if (PhotonNetwork.isMasterClient) {
-                                en.GetComponent<PlayerHealth>().Hurt(damage, pos);
+                                playerHealth.Hurt(damage, pos);
                             }
                         }
                     }
@@ -90,15 +97,11 @@ namespace AsanCai.Competition {
             Destroy(gameObject);
         }
 
-
-        public void CreatedByPlayer(int p) {
-            photonView.RPC("SetPlayer", PhotonTargets.All, p);
-        }
-
         [PunRPC]
         private void SetPlayer(int p) {
             player = p;
         }
+        #endregion
     }
 
 }

@@ -5,7 +5,7 @@ using UnityStandardAssets.CrossPlatformInput;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class PlayerShoot : PunBehaviour {
         [Tooltip("发射冷却时间")]
         public float coolingTime;

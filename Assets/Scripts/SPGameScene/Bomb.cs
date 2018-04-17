@@ -11,7 +11,6 @@ public class Bomb : MonoBehaviour {
     public float fuseTime = 1.5f;
     public GameObject explosion;
 
-    private LayBombs layBombs;
     private PickupSpawner pickupSpawner;
     private ParticleSystem explosionFX;
 
@@ -19,8 +18,6 @@ public class Bomb : MonoBehaviour {
         explosionFX = GameObject.FindGameObjectWithTag("ExplosionFX").GetComponent<ParticleSystem>();
 
         pickupSpawner = GameObject.Find("pickupManager").GetComponent<PickupSpawner>();
-
-        layBombs = GameObject.Find("LayBombs").GetComponent<LayBombs>();
     }
 
     private void Start() {
@@ -37,7 +34,7 @@ public class Bomb : MonoBehaviour {
     }
 
     public void Explode() {
-        layBombs.bombLaid = false;
+        BombManager.bm.bombLaid = false;
 
         //当炸弹爆炸的时候生成新的道具
         pickupSpawner.StartCoroutine(pickupSpawner.DeliverPickup());

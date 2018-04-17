@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class CameraFollow : MonoBehaviour {
 
         //摄像机中心和角色位置的最大偏移量

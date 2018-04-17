@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class PlayerController : MonoBehaviour {
 
         [HideInInspector]

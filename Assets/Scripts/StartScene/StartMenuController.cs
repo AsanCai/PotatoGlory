@@ -18,59 +18,97 @@ public class StartMenuController : PunBehaviour {
     public GameObject optionPanel;
     [Tooltip("登录面板")]
     public GameObject loginPanel;
-    [Tooltip("当前网络链接状态信息")]
-    public Text connectionState;
-    [Tooltip("用户名")]
-    public Text username;
-    [Tooltip("密码")]
-    public Text password;
+    [Tooltip("注册面板")]
+    public GameObject registerPanel;
+    [Tooltip("展示物体")]
+    public GameObject displayObject;
+    [Tooltip("提示当前状态")]
+    public Text resultText;
 
-    void Start () {
-        
+    [Tooltip("登录面板的用户输入框")]
+    public InputField loginUsername;
+    [Tooltip("登录面板的密码输入框")]
+    public InputField loginPassword;
+    [Tooltip("注册面板的用户输入框")]
+    public InputField registerUsername;
+    [Tooltip("注册面板的密码输入框")]
+    public InputField registerPassword;
+    [Tooltip("注册面板的重复密码输入框")]
+    public InputField registerRepeatPassword;
+
+    void Start() {
         if (!PhotonNetwork.connected) {
             //若当前网络尚未链接，那么显示选项面板
             SetOptionPanelActive();
+            //初始化
+            ClientManager.cm.Init();
         } else {
-            //如果已经连接到服务器了，那么显示游戏大厅
+            //断开登录服务器链接
+            ClientManager.cm.Disconnect();
+
+            //已经连接到大厅服务器，显示游戏大厅
             SceneManager.LoadScene("LobbyScene");
         }
 
-        //初始化网络连接状态文本信息
-        connectionState.text = "";  
+        if(ClientManager.cm.state == ClientManager.State.disconnected) {
+            ClientManager.cm.Connection();
+        }
     }
 
- 
+
     void Update() {
-//条件编译指令，只在Unity编辑器中（UNITY_EDITOR）编译此段代码
-#if (UNITY_EDITOR)
-        //在游戏画面左下角显示当前的网络连接状态
-        connectionState.text = PhotonNetwork.connectionStateDetailed.ToString();
-#endif
+        resultText.text = ClientManager.cm.recvStr;
 
         //当链接上服务器时加载大厅场景
         if (PhotonNetwork.connected) {
+            ClientManager.cm.Disconnect();
             SceneManager.LoadScene("LobbyScene");
+            return;
+        }
+
+        string username;
+        switch (ClientManager.cm.state) {
+            case ClientManager.State.login:
+                username = loginUsername.text.Trim();
+                Login(username);
+                break;
+            case ClientManager.State.register:
+                username = registerUsername.text.Trim();
+                Login(username);
+                break;
+            default:
+                break;
         }
     }
 
 
     //启用选项面板
-    public void SetOptionPanelActive() {
+    private void SetOptionPanelActive() {
         optionPanel.SetActive(true);
+        displayObject.SetActive(true);
 
         loginPanel.SetActive(false);
+        registerPanel.SetActive(false);
     }
 
     //启用登录面板
-    public void SetLoginPanelActive() {
+    private void SetLoginPanelActive() {
         loginPanel.SetActive(true);
+        displayObject.SetActive(true);
 
         optionPanel.SetActive(false);
+        registerPanel.SetActive(false);
+    }
+
+    private void SetRegisterPanelActive() {
+        registerPanel.SetActive(true);
+
+        displayObject.SetActive(false);
+        optionPanel.SetActive(false);
+        loginPanel.SetActive(false);
     }
 
     
-
-
     //点击多人游戏按钮
     public void ClickMPButton() {
         SetLoginPanelActive();
@@ -87,32 +125,52 @@ public class StartMenuController : PunBehaviour {
         Application.Quit();         
     }
 
+    //点击注册按钮
+    public void ClickRegisterButton() {
+        SetRegisterPanelActive();
+    }
+
     //点击登录按钮
     public void ClickLoginButton() {
+        string username = loginUsername.text;
+        string password = loginPassword.text;
+
+        ClientManager.cm.Login(username, password);
+    }
+
+    //点击确认按钮，确认注册
+    public void ClickConfirmButton() {
+        string username = registerUsername.text;
+        string password = registerPassword.text;
+        string repeatPassword = registerRepeatPassword.text;
+
+        ClientManager.cm.Register(username, password, repeatPassword);
+    }
+
+    //点击返回按钮
+    public void ClickBackButton() {
+        //清空输入框
+        loginUsername.text = "";
+        loginPassword.text = "";
+        registerUsername.text = "";
+        registerPassword.text = "";
+        registerRepeatPassword.text = "";
+
+        SetOptionPanelActive();
+    }
+
+    private void Login(string username) {
         //连接到客户端服务器
         if (!PhotonNetwork.connected) {
             PhotonNetwork.ConnectUsingSettings(version);
         }
 
-        //用于获取玩家输入的用户名
-        //这里使用name变量是因为好像不能直接修改username.text
-        string name;
-
-        //如果玩家未输入昵称，这里自动为其分配一个昵称
-        if (username.text == "") {
-            name = "游客" + Random.Range(1, 9999);
-        } else {
-            name = username.text;
-        }
-
         //设置玩家昵称
-        PhotonNetwork.player.NickName = name;
+        PhotonNetwork.player.NickName = username;
         //将玩家昵称保存在本地
-        PlayerPrefs.SetString("Username", name);
-    }
+        PlayerPrefs.SetString("Username", username);
 
-    //点击返回按钮
-    public void ClickBackButton() {
-        SetOptionPanelActive();
+        //重置为连接状态
+        ClientManager.cm.ResetState();
     }
 }

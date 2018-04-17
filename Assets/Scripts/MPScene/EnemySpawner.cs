@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class EnemySpawner : MonoBehaviour {
         [Tooltip("保存敌人预设")]
         public GameObject[] enemies;

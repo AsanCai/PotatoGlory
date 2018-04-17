@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class ButtonManager : MonoBehaviour {
         [HideInInspector]
         public static ButtonManager bm;

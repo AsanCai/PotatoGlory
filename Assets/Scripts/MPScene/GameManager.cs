@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class GameManager : PunBehaviour {
         [HideInInspector]
         public static GameManager gm;
@@ -310,7 +310,7 @@ namespace AsanCai.Competition {
         #endregion
 
 
-        #region 公用函数
+        #region 公用成员函数
 
         /***********************************************************************
          * 检查加载场景的玩家个数

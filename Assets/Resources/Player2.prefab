@@ -830,6 +830,7 @@ MonoBehaviour:
   speed: 30
   gun: {fileID: 1132903799800792}
   initMissileNum: 100
+  missileCount: 0
 --- !u!114 &114502099357648238
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -887,7 +888,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 100
-  invincibleTime: 0.35
+  invincibleTime: 2
   hurtForce: 100
   damageAmount: 10
   ouchClips:

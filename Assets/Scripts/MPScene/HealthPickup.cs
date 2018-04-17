@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class HealthPickup : PunBehaviour {
         [Tooltip("回复的血量")]
         public int healthBouns = 25;

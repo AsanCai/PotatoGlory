@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class Destroyer : MonoBehaviour {
 
         [Tooltip("是否要在对象Awake被销毁")]

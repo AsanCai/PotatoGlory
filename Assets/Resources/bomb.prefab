@@ -93,7 +93,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 10
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 341a43cfdb771724e87d19e1dd33e488, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -164,7 +164,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bombRadius: 8
-  bombForce: 150
   damage: 50
   boom: {fileID: 8300000, guid: 8b4e61c51941a46d1aac273472c814fd, type: 3}
   fuse: {fileID: 8300000, guid: 238da4efc08184aee919af254edb2ef1, type: 3}

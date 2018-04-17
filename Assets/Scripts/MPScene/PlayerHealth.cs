@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class PlayerHealth : PunBehaviour {
 
         [Tooltip("角色的生命值")]
@@ -54,7 +54,7 @@ namespace AsanCai.Competition {
             currentHP = maxHP;
             /* ***
              * 不在这里赋值，而是直接在声明时赋值，炸弹和导弹不能对玩家造成伤害，为什么？
-             * 可能是public会被设置为默认值?
+             * 无论在声明的时候赋什么值，两个变量都会被设置为false
              * ***/
             isAlive = true;
             invincible = false;
@@ -81,7 +81,6 @@ namespace AsanCai.Competition {
         }
 
         private void Update() {
-
             //不是本地玩家对象，结束函数执行
             if (!photonView.isMine)     
                 return;
@@ -89,14 +88,13 @@ namespace AsanCai.Competition {
             if (invincible) {
                 //当前是无敌状态，累加玩家对象的无敌时间
                 timer += Time.deltaTime;
-            } else {
-                //当前不是无敌状态，重置计时器
-                timer = 0;
-            }
+                //超过无敌时间，退出无敌状态
+                if (timer > invincibleTime) {
+                    photonView.RPC("SetInvincible", PhotonTargets.All, false);
 
-            //超过无敌时间，退出无敌状态
-            if (timer > invincibleTime) {
-                photonView.RPC("SetInvincible", PhotonTargets.All, false);
+                    //当前不是无敌状态，重置计时器
+                    timer = 0;
+                }
             }
         }
 

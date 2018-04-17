@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Photon;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class Enemy : PunBehaviour {
         [Tooltip("怪物移动的速度")]
         public float moveSpeed = 2f;
@@ -83,36 +83,11 @@ namespace AsanCai.Competition {
             }
         }
 
+        #region 公共成员函数
         public void Hurt(int damage, Vector3 hitPos, int player) {
             photonView.RPC("TakeDamage", PhotonTargets.All, damage, hitPos, player);
         }
 
-        [PunRPC]
-        private void TakeDamage(int damage, Vector3 hitPos, int player) {
-            Vector3 hurtVector = transform.position - hitPos + Vector3.up * 5f;
-            body.AddForce(hurtVector * hurtForce);
-
-            if (PhotonNetwork.isMasterClient) {
-                currentHp -= damage;
-
-                photonView.RPC("UpdateHp", PhotonTargets.All, currentHp, player);
-            }
-        }
-
-        [PunRPC]
-        private void UpdateHp(int newHp, int player) {
-            currentHp = newHp;
-
-            if (currentHp == 1 && damagedEnemy != null) {
-                spriteRenderer.sprite = damagedEnemy;
-            }
-
-            if (currentHp <= 0 && !dead) {
-                Death();
-
-                ScoreManager.sm.AddScore(player, score);
-            }
-        }
 
         private void Death() {
             SpriteRenderer[] otherRenderers = GetComponentsInChildren<SpriteRenderer>();
@@ -153,6 +128,36 @@ namespace AsanCai.Competition {
 
             transform.localScale = enemyScale;
         }
+        #endregion
+
+        #region RPC函数
+        [PunRPC]
+        private void TakeDamage(int damage, Vector3 hitPos, int player) {
+            Vector3 hurtVector = transform.position - hitPos + Vector3.up * 5f;
+            body.AddForce(hurtVector * hurtForce);
+
+            if (PhotonNetwork.isMasterClient) {
+                currentHp -= damage;
+
+                photonView.RPC("UpdateHp", PhotonTargets.All, currentHp, player);
+            }
+        }
+
+        [PunRPC]
+        private void UpdateHp(int newHp, int player) {
+            currentHp = newHp;
+
+            if (currentHp == 1 && damagedEnemy != null) {
+                spriteRenderer.sprite = damagedEnemy;
+            }
+
+            if (currentHp <= 0 && !dead) {
+                Death();
+
+                ScoreManager.sm.AddScore(player, score);
+            }
+        }
+        #endregion
     }
 
 }

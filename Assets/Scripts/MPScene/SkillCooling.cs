@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityStandardAssets.CrossPlatformInput;
 
-namespace AsanCai.Competition {
+namespace AsanCai.MPScene {
     public class SkillCooling : MonoBehaviour {
         [Tooltip("激活按钮使用的名字")]
         public string Name;
