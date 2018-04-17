@@ -8,7 +8,7 @@
 ---
 
 
-3. 游戏功能
+2. 游戏功能
 
     游戏的主要功能包括：
 * 用户注册登录功能（*因为Photon不提供登录服务器，因此需要自己搭建数据库并编写服务端程序，本项目的服务端程序仓库为[PotatoGloryGameServer](https://github.com/AsanCai/PotatoGloryGameServer)*）
