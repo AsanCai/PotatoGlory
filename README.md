@@ -21,10 +21,12 @@
 
 3. 项目运行说明
 
-* clone服务器项目到本地，创建数据库之后，设置数据库连接参数、主机ip（建议在本地运行，ip填127.0.0.1）和端口
-* clone本项目到本地，然后打开StartScene，将ClientManager.cs绑定到ClientManager上，填写主机ip和端口
+* 下载[Photon-Server](https://www.photonengine.com/en-US/Download/Photon-Server-SDK_v4-0-29-11263.exe)，下载之前需要先注册一个Photon账号。下载完成后，双击下载好的exe文件进行解压
+* 进入解压目录，打开*deploy/bin_Win64/PhotonControl.exe*，然后在任务栏右键Photon图标，选择*LoadBalancing(MyCloud)->Star as Application*，接着选择*Game Server IP Config->Set Public IP*，并记住显示的ip地址
+* clone本项目到本地，用Unity打开之后，在*Photon Unity Networking->Resources->PhotonServerSettings*里设置**Hosting**为**Self Hosted**，然后填入上一步的ip地址
+* clone[服务器项目](https://github.com/AsanCai/PotatoGloryGameServer)到本地，创建数据库之后，设置数据库连接参数、主机ip（建议在本地运行，ip填127.0.0.1）和端口
+* clone本项目到本地，打开StartScene，点击ClientManager，在Inspector窗口填写主机ip和端口
 * 运行服务器程序（因为是.net Core程序，所以需要安装.net Core和相应的.net framework）
-
 
 ---
 
