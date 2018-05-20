@@ -15,7 +15,9 @@ public class ClientManager : MonoBehaviour {
     public string host;
     [Tooltip("端口地址")]
     public int port;
-    
+
+    //用于发送心跳协议的计时器
+    private System.Timers.Timer heartTimer = new System.Timers.Timer(5000);
 
     [HideInInspector]
     public string recvStr = "";
@@ -30,6 +32,7 @@ public class ClientManager : MonoBehaviour {
     }
     [HideInInspector]
     public State state = State.disconnected;
+    //提示信息显示时间
     [HideInInspector]
     public float timer = 0;
 
@@ -85,9 +88,32 @@ public class ClientManager : MonoBehaviour {
                 Receivecb,
                 null
                 );
-        } catch (Exception e) {
-            recvStr = "网络异常，请检查网络之后重试";
-            Disconnect();
+
+            //每五秒发送一次HeartBeat
+            StartCoroutine(SendHeartBeat(5.0f));
+
+        } catch {
+            recvStr = "与服务器建立连接失败，正在尝试重连";
+            //重连
+            StartCoroutine(Reconnect());
+            timer = 0;
+        }
+    }
+
+    private IEnumerator SendHeartBeat(float interval) {
+        yield return new WaitForSeconds(interval);
+        string str = "HeartBeat";
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(str);
+        try {
+            socket.Send(bytes);
+            heartTimer.Start();
+
+            //循环调用
+            StartCoroutine(SendHeartBeat(interval));
+        } catch {
+            recvStr = "网络状态异常";
+            //重连
+            StartCoroutine(Reconnect());
             timer = 0;
         }
     }
@@ -131,13 +157,13 @@ public class ClientManager : MonoBehaviour {
                     SocketFlags.None,
                     Receivecb,
                     null);
-        } catch (Exception e) {
+        } catch {
             recvStr = "服务器异常";
             timer = 0;
-            Disconnect();
         }
     }
 
+    //登录
     public void Login(string un, string pwd) {
         string username = un.Trim();
         string password = pwd.Trim();
@@ -176,10 +202,13 @@ public class ClientManager : MonoBehaviour {
             socket.Send(bytes);
         } catch (Exception e) {
             recvStr = "登录失败，请检查网络状态重试";
+            //重连
+            StartCoroutine(Reconnect());
             timer = 0;
         }
     }
 
+    //注册
     public void Register(string um, string pwd, string repwd) {
         string username = um.Trim();
         string password = pwd.Trim();
@@ -219,14 +248,15 @@ public class ClientManager : MonoBehaviour {
             return;
         }
 
-
-
         string str = register + " " + username + " " + password;
         byte[] bytes = System.Text.Encoding.UTF8.GetBytes(str);
         try {
             socket.Send(bytes);
         } catch (Exception e) {
             recvStr = "注册失败，请检查网络之后重试";
+
+            //重连
+            StartCoroutine(Reconnect());
             timer = 0;
         }
     }
@@ -237,11 +267,19 @@ public class ClientManager : MonoBehaviour {
     }
 
     public void Disconnect() {
-        socket.Close();
+        //如果当前有socket实例，就释放
+        if(socket != null) {
+            socket.Close();
+        }
         state = State.disconnected;
     }
 
     public void ResetState() {
         state = State.connected;
+    }
+
+    private IEnumerator Reconnect() {
+        yield return new WaitForSeconds(showTime);
+        ClientManager.cm.Connection();
     }
 }

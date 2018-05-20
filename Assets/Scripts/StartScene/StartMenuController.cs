@@ -50,11 +50,12 @@ public class StartMenuController : PunBehaviour {
             SceneManager.LoadScene("LobbyScene");
         }
 
-        if(ClientManager.cm.state == ClientManager.State.disconnected) {
+        if (ClientManager.cm.state == ClientManager.State.disconnected) {
             ClientManager.cm.Connection();
         }
     }
 
+    
 
     void Update() {
         resultText.text = ClientManager.cm.recvStr;
